@@ -89,14 +89,38 @@ export const useChat = () => {
     }
   };
 
-  const sendMessage = async (question: string): Promise<void> => {
-    if (!user?.phone || !question.trim()) return;
+  const uploadFile = async (file: File): Promise<string> => {
+    if (!user?.phone) throw new Error('User not authenticated');
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user.phone}/${Date.now()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('chat_uploads')
+      .upload(fileName, file);
+
+    if (uploadError) throw uploadError;
+
+    const { data: urlData } = supabase.storage
+      .from('chat_uploads')
+      .getPublicUrl(fileName);
+
+    return urlData.publicUrl;
+  };
+
+  const sendMessage = async (question: string, file?: File): Promise<void> => {
+    if (!user?.phone || (!question.trim() && !file)) return;
 
     setIsTyping(true);
 
     try {
+      let fileUrl = null;
+      if (file) {
+        fileUrl = await uploadFile(file);
+      }
+
       // Search for bot response
-      const botResponse = await searchFAQs(question);
+      const botResponse = await searchFAQs(question || 'File uploaded');
 
       // Save to database
       const { data, error } = await supabase
@@ -104,8 +128,9 @@ export const useChat = () => {
         .insert([
           {
             user_phone: user.phone,
-            question: question.trim(),
+            question: question.trim() || 'File uploaded',
             bot_response: botResponse,
+            file_url: fileUrl,
             is_unsatisfied: false,
             resolved: false,
           }
@@ -167,5 +192,6 @@ export const useChat = () => {
     sendMessage,
     markAsUnsatisfied,
     loadChatHistory,
+    uploadFile,
   };
 };

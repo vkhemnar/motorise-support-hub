@@ -13,7 +13,11 @@ import {
   AlertCircle,
   Phone,
   Loader2,
-  MessageCircle
+  MessageCircle,
+  Paperclip,
+  Image,
+  File,
+  X
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChat, ChatMessage } from '@/hooks/useChat';
@@ -25,7 +29,9 @@ export const ChatInterface = () => {
   const { messages, isLoading, isTyping, sendMessage, markAsUnsatisfied } = useChat();
   const { createOrUpdateUser } = useUsers();
   const [newMessage, setNewMessage] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,15 +48,43 @@ export const ChatInterface = () => {
     }
   }, [user, createOrUpdateUser]);
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Check file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please select a file smaller than 10MB.",
+          variant: "destructive",
+        });
+        return;
+      }
+      setSelectedFile(file);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || isTyping) return;
+    if ((!newMessage.trim() && !selectedFile) || isTyping) return;
 
     const messageText = newMessage;
+    const fileToSend = selectedFile;
     setNewMessage('');
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
 
     try {
-      await sendMessage(messageText);
+      await sendMessage(messageText, fileToSend || undefined);
       toast({
         title: "Message sent",
         description: "Your message has been processed successfully.",
@@ -62,7 +96,8 @@ export const ChatInterface = () => {
         description: "Failed to send message. Please try again.",
         variant: "destructive",
       });
-      setNewMessage(messageText); // Restore message on error
+      setNewMessage(messageText);
+      setSelectedFile(fileToSend);
     }
   };
 
@@ -88,6 +123,14 @@ export const ChatInterface = () => {
       hour: '2-digit', 
       minute: '2-digit' 
     });
+  };
+
+  const isImageFile = (url: string) => {
+    return /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+  };
+
+  const getFileName = (url: string) => {
+    return url.split('/').pop() || 'File';
   };
 
   if (isLoading) {
@@ -150,6 +193,30 @@ export const ChatInterface = () => {
                   <div className="max-w-[80%] sm:max-w-md">
                     <div className="bg-primary text-primary-foreground px-4 py-2 rounded-lg rounded-br-sm">
                       <p className="text-sm">{message.question}</p>
+                      {message.file_url && (
+                        <div className="mt-2 border-t border-primary-foreground/20 pt-2">
+                          {isImageFile(message.file_url) ? (
+                            <img
+                              src={message.file_url}
+                              alt="Uploaded image"
+                              className="max-w-full h-auto rounded border border-primary-foreground/20"
+                              style={{ maxHeight: '200px' }}
+                            />
+                          ) : (
+                            <div className="flex items-center space-x-2 text-primary-foreground/80">
+                              <File className="h-4 w-4" />
+                              <a
+                                href={message.file_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm underline hover:text-primary-foreground"
+                              >
+                                {getFileName(message.file_url)}
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="flex items-center justify-end mt-1 space-x-2">
                       <span className="text-xs text-muted-foreground">
@@ -240,6 +307,36 @@ export const ChatInterface = () => {
       <div className="border-t bg-background">
         <div className="p-3 sm:p-4">
           <div className="max-w-4xl mx-auto">
+            {/* File preview */}
+            {selectedFile && (
+              <div className="mb-3 p-2 bg-muted rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    {selectedFile.type.startsWith('image/') ? (
+                      <Image className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <File className="h-4 w-4 text-muted-foreground" />
+                    )}
+                    <span className="text-sm text-muted-foreground truncate max-w-xs">
+                      {selectedFile.name}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      ({(selectedFile.size / 1024).toFixed(1)} KB)
+                    </span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleRemoveFile}
+                    className="h-6 w-6 p-0"
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleSendMessage} className="flex items-end space-x-2">
               <div className="flex-1">
                 <Input
@@ -251,11 +348,21 @@ export const ChatInterface = () => {
                   maxLength={500}
                 />
               </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="min-h-[44px] px-3"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isTyping}
+              >
+                <Paperclip className="h-4 w-4" />
+              </Button>
               <Button 
                 type="submit" 
                 size="sm"
                 className="min-h-[44px] px-4"
-                disabled={!newMessage.trim() || isTyping}
+                disabled={(!newMessage.trim() && !selectedFile) || isTyping}
               >
                 {isTyping ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -264,9 +371,17 @@ export const ChatInterface = () => {
                 )}
               </Button>
             </form>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              onChange={handleFileSelect}
+              className="hidden"
+              accept="image/*,.pdf,.doc,.docx,.txt"
+            />
             
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              Ask about battery, brakes, charging, or any scooter issues
+              Ask about battery, brakes, charging, or any scooter issues. You can also attach images or files.
             </p>
           </div>
         </div>
