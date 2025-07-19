@@ -14,7 +14,157 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chats: {
+        Row: {
+          bot_response: string | null
+          created_at: string
+          file_url: string | null
+          id: string
+          is_unsatisfied: boolean
+          question: string
+          resolved: boolean
+          user_phone: string
+        }
+        Insert: {
+          bot_response?: string | null
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          is_unsatisfied?: boolean
+          question: string
+          resolved?: boolean
+          user_phone: string
+        }
+        Update: {
+          bot_response?: string | null
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          is_unsatisfied?: boolean
+          question?: string
+          resolved?: boolean
+          user_phone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chats_user_phone_fkey"
+            columns: ["user_phone"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["phone_number"]
+          },
+        ]
+      }
+      faqs: {
+        Row: {
+          id: string
+          question: string
+          response: string
+        }
+        Insert: {
+          id?: string
+          question: string
+          response: string
+        }
+        Update: {
+          id?: string
+          question?: string
+          response?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          phone_number: string
+          product: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          phone_number: string
+          product: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          phone_number?: string
+          product?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_phone_number_fkey"
+            columns: ["phone_number"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["phone_number"]
+          },
+        ]
+      }
+      unsatisfied_queries: {
+        Row: {
+          chat_id: string
+          file_url: string | null
+          id: string
+          timestamp: string
+          user_phone: string
+        }
+        Insert: {
+          chat_id: string
+          file_url?: string | null
+          id?: string
+          timestamp?: string
+          user_phone: string
+        }
+        Update: {
+          chat_id?: string
+          file_url?: string | null
+          id?: string
+          timestamp?: string
+          user_phone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unsatisfied_queries_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "unsatisfied_queries_user_phone_fkey"
+            columns: ["user_phone"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["phone_number"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string
+          phone_number: string
+          role: Database["public"]["Enums"]["user_role"]
+        }
+        Insert: {
+          created_at?: string
+          phone_number: string
+          role?: Database["public"]["Enums"]["user_role"]
+        }
+        Update: {
+          created_at?: string
+          phone_number?: string
+          role?: Database["public"]["Enums"]["user_role"]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +173,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      user_role: "admin" | "customer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +300,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["admin", "customer"],
+    },
   },
 } as const
