@@ -77,6 +77,11 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
+			boxShadow: {
+				'electric': 'var(--shadow-electric)',
+				'card': 'var(--shadow-card)',
+				'elevation': 'var(--shadow-elevation)'
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
