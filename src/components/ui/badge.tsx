@@ -15,6 +15,12 @@ const badgeVariants = cva(
         destructive:
           "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
         outline: "text-foreground",
+        // MotoRise Status Variants
+        open: "border-transparent bg-info text-white",
+        "in-progress": "border-transparent bg-warning text-white",
+        resolved: "border-transparent bg-success text-white",
+        closed: "border-transparent bg-muted text-muted-foreground",
+        priority: "border-transparent bg-destructive text-white animate-pulse",
       },
     },
     defaultVariants: {

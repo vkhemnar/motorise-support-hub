@@ -9,32 +9,56 @@ All colors MUST be HSL.
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 220 15% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 15% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 15% 10%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Electric Blue Theme */
+    --primary: 211 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 211 100% 45%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 220 25% 95%;
+    --secondary-foreground: 220 15% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 25% 96%;
+    --muted-foreground: 220 10% 50%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 33 100% 60%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 20% 90%;
+    --input: 220 20% 95%;
+    --ring: 211 100% 50%;
+
+    /* Custom Design Tokens */
+    --navy: 220 30% 15%;
+    --navy-foreground: 0 0% 95%;
+    
+    --electric: 211 100% 50%;
+    --electric-light: 195 100% 75%;
+    --electric-dark: 220 100% 35%;
+    
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
+    --info: 217 91% 60%;
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(211 100% 50%), hsl(195 100% 55%));
+    --gradient-electric: linear-gradient(45deg, hsl(211 100% 50%), hsl(195 100% 65%), hsl(180 100% 75%));
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(220 25% 98%));
+    
+    /* Shadows */
+    --shadow-electric: 0 4px 20px hsl(211 100% 50% / 0.15);
+    --shadow-card: 0 2px 10px hsl(220 20% 20% / 0.08);
+    --shadow-elevation: 0 8px 30px hsl(220 20% 20% / 0.12);
 
     --radius: 0.5rem;
 
@@ -100,6 +124,69 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+@layer components {
+  /* Electric Button Variants */
+  .btn-electric {
+    @apply bg-gradient-to-r from-primary to-electric-light text-white font-semibold rounded-lg shadow-[var(--shadow-electric)] transition-all duration-300 hover:scale-105 hover:shadow-elevation;
+  }
+  
+  .btn-outline-electric {
+    @apply border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-white transition-all duration-300;
+  }
+
+  /* Card Variants */
+  .card-electric {
+    @apply bg-[var(--gradient-card)] shadow-[var(--shadow-card)] border border-border rounded-xl;
+  }
+
+  .card-hover {
+    @apply hover:shadow-[var(--shadow-elevation)] hover:-translate-y-1 transition-all duration-300;
+  }
+
+  /* Navigation */
+  .nav-item {
+    @apply relative px-4 py-2 text-muted-foreground hover:text-primary transition-colors duration-200;
+  }
+
+  .nav-item.active {
+    @apply text-primary font-medium;
+  }
+
+  .nav-item.active::after {
+    @apply content-[''] absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-full;
+  }
+
+  /* Status Indicators */
+  .status-open {
+    @apply bg-info text-white;
+  }
+
+  .status-in-progress {
+    @apply bg-warning text-white;
+  }
+
+  .status-resolved {
+    @apply bg-success text-white;
+  }
+
+  .status-closed {
+    @apply bg-muted text-muted-foreground;
+  }
+
+  /* Animations */
+  .fade-in {
+    @apply animate-in fade-in-0 duration-300;
+  }
+
+  .slide-up {
+    @apply animate-in slide-in-from-bottom-4 duration-300;
+  }
+
+  .electric-pulse {
+    @apply animate-pulse;
   }
 }
