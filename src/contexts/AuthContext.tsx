@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useUsers } from '@/hooks/useUsers';
 
 interface User {
   id: string;
@@ -35,24 +36,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (phone: string, otp: string): Promise<void> => {
     setIsLoading(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Determine role based on phone number
-    const role = ADMIN_NUMBERS.includes(phone) ? 'admin' : 'customer';
-    
-    // Create user object
-    const newUser: User = {
-      id: Math.random().toString(36).substr(2, 9),
-      phone,
-      role,
-      name: role === 'admin' ? 'Admin User' : 'Customer User'
-    };
-    
-    // Store user
-    setUser(newUser);
-    localStorage.setItem('motorise_user', JSON.stringify(newUser));
-    setIsLoading(false);
+    try {
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Determine role based on phone number
+      const role = ADMIN_NUMBERS.includes(phone) ? 'admin' : 'customer';
+      
+      // Create user object
+      const newUser: User = {
+        id: Math.random().toString(36).substr(2, 9),
+        phone,
+        role,
+        name: role === 'admin' ? 'Admin User' : 'Customer User'
+      };
+      
+      // Store user
+      setUser(newUser);
+      localStorage.setItem('motorise_user', JSON.stringify(newUser));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const logout = () => {
