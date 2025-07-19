@@ -1,9 +1,21 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Headphones, MessageCircle, Clock } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import heroImage from '@/assets/hero-scooter.jpg';
 
 export const Hero = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleGetSupport = () => {
+    if (user) {
+      navigate(user.role === 'admin' ? '/admin' : '/chat');
+    } else {
+      navigate('/login');
+    }
+  };
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-[var(--gradient-card)] overflow-hidden">
       {/* Background Pattern */}
@@ -25,8 +37,8 @@ export const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button className="btn-electric text-lg px-8 py-6">
-                Get Support Now
+              <Button className="btn-electric text-lg px-8 py-6" onClick={handleGetSupport}>
+                {user ? (user.role === 'admin' ? 'Go to Dashboard' : 'Start Chat') : 'Get Support Now'}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button variant="outline" size="lg" className="text-lg px-8 py-6 btn-outline-electric">

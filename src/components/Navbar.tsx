@@ -1,26 +1,44 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Zap, User, Settings } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, Zap, User, Settings, LogOut, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
-  const navItems = [
+  const navItems = user ? [
+    { name: 'Home', path: '/' },
+    ...(user.role === 'admin' ? [
+      { name: 'Dashboard', path: '/admin' },
+      { name: 'All Tickets', path: '/admin/tickets' }
+    ] : [
+      { name: 'Support Chat', path: '/chat' },
+      { name: 'My Tickets', path: '/tickets' },
+      { name: 'FAQ', path: '/faq' }
+    ])
+  ] : [
     { name: 'Home', path: '/' },
     { name: 'Support', path: '/support' },
-    { name: 'My Tickets', path: '/tickets' },
     { name: 'FAQ', path: '/faq' },
   ];
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-border shadow-sm">
@@ -49,30 +67,66 @@ export const Navbar = () => {
 
           {/* Right side actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" size="sm">
-              Sign In
-            </Button>
-            <Button className="btn-electric">
-              Get Support
-            </Button>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="p-2">
-                  <User className="h-4 w-4" />
+            {user ? (
+              <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2">
+                  <div className={`p-1 rounded-full ${user.role === 'admin' ? 'bg-destructive' : 'bg-primary'}`}>
+                    {user.role === 'admin' ? (
+                      <Shield className="h-3 w-3 text-white" />
+                    ) : (
+                      <User className="h-3 w-3 text-white" />
+                    )}
+                  </div>
+                  <span className="text-sm text-muted-foreground capitalize">{user.role}</span>
+                </div>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="p-2">
+                      <User className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 bg-white shadow-elevation border border-border">
+                    <DropdownMenuItem className="font-medium">
+                      {user.name}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="text-xs text-muted-foreground">
+                      {user.phone}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <User className="mr-2 h-4 w-4" />
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Settings className="mr-2 h-4 w-4" />
+                      Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ) : (
+              <>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => navigate('/login')}
+                >
+                  Sign In
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                <Button 
+                  className="btn-electric"
+                  onClick={() => navigate('/login')}
+                >
+                  Get Support
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
