@@ -30,12 +30,6 @@ export const Navbar = () => {
   ] : [{
     name: 'Home',
     path: '/'
-  }, {
-    name: 'Support',
-    path: '/support'
-  }, {
-    name: 'FAQ',
-    path: '/faq'
   }];
   const handleLogout = () => {
     logout();
