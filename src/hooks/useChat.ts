@@ -61,9 +61,8 @@ export const useChat = () => {
     const orderKeywords = ['order', 'delivery', 'shipment', 'shipped', 'tracking', 'status'];
     const hasOrderKeyword = orderKeywords.some(keyword => lowerQuestion.includes(keyword));
     
-    // Check for order ID pattern (ORD followed by numbers/letters)
-    const orderIdMatch = question.match(/ORD[A-Z0-9]+/i);
-    console.log('Question:', question, 'OrderIdMatch:', orderIdMatch);
+    // Check for order ID pattern (ORD followed by numbers, not just letters)
+    const orderIdMatch = question.match(/\bORD\d+[A-Z0-9]*\b/i);
     
     if (hasOrderKeyword || orderIdMatch) {
       try {
