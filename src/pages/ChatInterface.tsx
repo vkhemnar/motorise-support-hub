@@ -181,224 +181,243 @@ export const ChatInterface = () => {
       </div>
 
       <div className="p-4">
-        <div className="min-h-[80vh] flex flex-col">
-          {/* Chat messages area - scrollable */}
-          <div className="flex-1 overflow-hidden">
-            <div className="h-full overflow-y-auto">
-              {/* Welcome message */}
-              {messages.length === 0 && (
-                <div className="text-center py-8">
-                  <Bot className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-medium mb-2">Welcome to MotoRise Support!</h3>
-                  <p className="text-muted-foreground max-w-md mx-auto">
-                    I'm here to help with any questions about your electric scooter. 
-                    Ask me anything - from battery issues to maintenance tips!
-                  </p>
-                </div>
-              )}
+        <Tabs defaultValue="chat" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-4">
+            <TabsTrigger value="chat" className="flex items-center gap-2">
+              <MessageCircle className="h-4 w-4" />
+              Chat
+            </TabsTrigger>
+            <TabsTrigger value="tickets" className="flex items-center gap-2">
+              <Ticket className="h-4 w-4" />
+              My Tickets
+            </TabsTrigger>
+          </TabsList>
 
-              {/* Chat messages */}
-              <div className="space-y-4 max-w-4xl mx-auto">
-                {messages.map((message) => (
-                  <div key={message.id} className="space-y-3">
-                    {/* User question */}
-                    <div className="flex justify-end">
-                      <div className="max-w-[80%] sm:max-w-md">
-                        <div className="bg-primary text-primary-foreground px-4 py-2 rounded-lg rounded-br-sm">
-                          <p className="text-sm">{message.question}</p>
-                          {message.file_url && (
-                            <div className="mt-2 border-t border-primary-foreground/20 pt-2">
-                              {isImageFile(message.file_url) ? (
-                                <img
-                                  src={message.file_url}
-                                  alt="Uploaded image"
-                                  className="max-w-full h-auto rounded border border-primary-foreground/20"
-                                  style={{ maxHeight: '200px' }}
-                                />
-                              ) : (
-                                <div className="flex items-center space-x-2 text-primary-foreground/80">
-                                  <File className="h-4 w-4" />
-                                  <a
-                                    href={message.file_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-sm underline hover:text-primary-foreground"
-                                  >
-                                    {getFileName(message.file_url)}
-                                  </a>
+          <TabsContent value="chat" className="space-y-4">
+            <div className="min-h-[80vh] flex flex-col">
+              {/* Chat messages area - scrollable */}
+              <div className="flex-1 overflow-hidden">
+                <div className="h-full overflow-y-auto">
+                  {/* Welcome message */}
+                  {messages.length === 0 && (
+                    <div className="text-center py-8">
+                      <Bot className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                      <h3 className="text-lg font-medium mb-2">Welcome to MotoRise Support!</h3>
+                      <p className="text-muted-foreground max-w-md mx-auto">
+                        I'm here to help with any questions about your electric scooter. 
+                        Ask me anything - from battery issues to maintenance tips!
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Chat messages */}
+                  <div className="space-y-4 max-w-4xl mx-auto">
+                    {messages.map((message) => (
+                      <div key={message.id} className="space-y-3">
+                        {/* User question */}
+                        <div className="flex justify-end">
+                          <div className="max-w-[80%] sm:max-w-md">
+                            <div className="bg-primary text-primary-foreground px-4 py-2 rounded-lg rounded-br-sm">
+                              <p className="text-sm">{message.question}</p>
+                              {message.file_url && (
+                                <div className="mt-2 border-t border-primary-foreground/20 pt-2">
+                                  {isImageFile(message.file_url) ? (
+                                    <img
+                                      src={message.file_url}
+                                      alt="Uploaded image"
+                                      className="max-w-full h-auto rounded border border-primary-foreground/20"
+                                      style={{ maxHeight: '200px' }}
+                                    />
+                                  ) : (
+                                    <div className="flex items-center space-x-2 text-primary-foreground/80">
+                                      <File className="h-4 w-4" />
+                                      <a
+                                        href={message.file_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-sm underline hover:text-primary-foreground"
+                                      >
+                                        {getFileName(message.file_url)}
+                                      </a>
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </div>
-                          )}
-                        </div>
-                        <div className="flex items-center justify-end mt-1 space-x-2">
-                          <span className="text-xs text-muted-foreground">
-                            {formatTime(message.created_at)}
-                          </span>
-                          <User className="h-3 w-3 text-muted-foreground" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Bot response */}
-                    {message.bot_response && (
-                      <div className="flex justify-start">
-                        <div className="max-w-[85%] sm:max-w-lg">
-                          <div className="bg-muted px-4 py-2 rounded-lg rounded-bl-sm">
-                            <p className="text-sm">{message.bot_response}</p>
-                          </div>
-                          <div className="flex items-center justify-between mt-2">
-                            <div className="flex items-center space-x-2">
-                              <Bot className="h-3 w-3 text-muted-foreground" />
+                            <div className="flex items-center justify-end mt-1 space-x-2">
                               <span className="text-xs text-muted-foreground">
                                 {formatTime(message.created_at)}
                               </span>
+                              <User className="h-3 w-3 text-muted-foreground" />
                             </div>
-                            
-                            {/* Feedback buttons */}
-                            {!message.is_unsatisfied && (
-                              <div className="flex items-center space-x-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-6 w-6 p-0 hover:bg-green-100 hover:text-green-600"
-                                  onClick={() => {
-                                    toast({
-                                      title: "Thank you!",
-                                      description: "Your feedback helps us improve our service.",
-                                    });
-                                  }}
-                                >
-                                  <ThumbsUp className="h-3 w-3" />
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="text-xs px-2 py-1 h-7 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                                  onClick={() => handleUnsatisfied(message.id)}
-                                >
-                                  <AlertCircle className="h-3 w-3 mr-1" />
-                                  Not satisfied – escalate this
-                                </Button>
+                          </div>
+                        </div>
+
+                        {/* Bot response */}
+                        {message.bot_response && (
+                          <div className="flex justify-start">
+                            <div className="max-w-[85%] sm:max-w-lg">
+                              <div className="bg-muted px-4 py-2 rounded-lg rounded-bl-sm">
+                                <p className="text-sm">{message.bot_response}</p>
                               </div>
-                            )}
-                            
-                            {message.is_unsatisfied && (
-                              <Badge variant="outline" className="text-xs">
-                                <AlertCircle className="h-3 w-3 mr-1" />
-                                Escalated to support
-                              </Badge>
-                            )}
+                              <div className="flex items-center justify-between mt-2">
+                                <div className="flex items-center space-x-2">
+                                  <Bot className="h-3 w-3 text-muted-foreground" />
+                                  <span className="text-xs text-muted-foreground">
+                                    {formatTime(message.created_at)}
+                                  </span>
+                                </div>
+                                
+                                {/* Feedback buttons */}
+                                {!message.is_unsatisfied && (
+                                  <div className="flex items-center space-x-2">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 hover:bg-green-100 hover:text-green-600"
+                                      onClick={() => {
+                                        toast({
+                                          title: "Thank you!",
+                                          description: "Your feedback helps us improve our service.",
+                                        });
+                                      }}
+                                    >
+                                      <ThumbsUp className="h-3 w-3" />
+                                    </Button>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="text-xs px-2 py-1 h-7 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                                      onClick={() => handleUnsatisfied(message.id)}
+                                    >
+                                      <AlertCircle className="h-3 w-3 mr-1" />
+                                      Not satisfied – escalate this
+                                    </Button>
+                                  </div>
+                                )}
+                                
+                                {message.is_unsatisfied && (
+                                  <Badge variant="outline" className="text-xs">
+                                    <AlertCircle className="h-3 w-3 mr-1" />
+                                    Escalated to support
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    {/* Typing indicator */}
+                    {isTyping && (
+                      <div className="flex justify-start">
+                        <div className="bg-muted px-4 py-2 rounded-lg rounded-bl-sm">
+                          <div className="flex items-center space-x-1">
+                            <Bot className="h-3 w-3 text-muted-foreground" />
+                            <div className="flex space-x-1">
+                              <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
+                              <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                              <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     )}
+                    
+                    <div ref={messagesEndRef} />
                   </div>
-                ))}
+                </div>
+              </div>
 
-                {/* Typing indicator */}
-                {isTyping && (
-                  <div className="flex justify-start">
-                    <div className="bg-muted px-4 py-2 rounded-lg rounded-bl-sm">
-                      <div className="flex items-center space-x-1">
-                        <Bot className="h-3 w-3 text-muted-foreground" />
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+              {/* Message input - fixed at bottom */}
+              <div className="border-t bg-background pt-4">
+                <div className="max-w-4xl mx-auto">
+                  {/* File preview */}
+                  {selectedFile && (
+                    <div className="mb-3 p-2 bg-muted rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          {selectedFile.type.startsWith('image/') ? (
+                            <Image className="h-4 w-4 text-muted-foreground" />
+                          ) : (
+                            <File className="h-4 w-4 text-muted-foreground" />
+                          )}
+                          <span className="text-sm text-muted-foreground truncate max-w-xs">
+                            {selectedFile.name}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            ({(selectedFile.size / 1024).toFixed(1)} KB)
+                          </span>
                         </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={handleRemoveFile}
+                          className="h-6 w-6 p-0"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
                       </div>
                     </div>
-                  </div>
-                )}
-                
-                <div ref={messagesEndRef} />
-              </div>
-            </div>
-          </div>
+                  )}
 
-          {/* Message input - fixed at bottom */}
-          <div className="border-t bg-background pt-4">
-            <div className="max-w-4xl mx-auto">
-              {/* File preview */}
-              {selectedFile && (
-                <div className="mb-3 p-2 bg-muted rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      {selectedFile.type.startsWith('image/') ? (
-                        <Image className="h-4 w-4 text-muted-foreground" />
-                      ) : (
-                        <File className="h-4 w-4 text-muted-foreground" />
-                      )}
-                      <span className="text-sm text-muted-foreground truncate max-w-xs">
-                        {selectedFile.name}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        ({(selectedFile.size / 1024).toFixed(1)} KB)
-                      </span>
+                  <form onSubmit={handleSendMessage} className="flex items-end space-x-2">
+                    <div className="flex-1">
+                      <Input
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder="Ask about your scooter..."
+                        className="min-h-[44px] resize-none"
+                        disabled={isTyping}
+                        maxLength={500}
+                      />
                     </div>
                     <Button
                       type="button"
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
-                      onClick={handleRemoveFile}
-                      className="h-6 w-6 p-0"
+                      className="min-h-[44px] px-3"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isTyping}
                     >
-                      <X className="h-3 w-3" />
+                      <Paperclip className="h-4 w-4" />
                     </Button>
-                  </div>
-                </div>
-              )}
+                    <Button 
+                      type="submit" 
+                      size="sm"
+                      className="min-h-[44px] px-4"
+                      disabled={(!newMessage.trim() && !selectedFile) || isTyping}
+                    >
+                      {isTyping ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Send className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </form>
 
-              <form onSubmit={handleSendMessage} className="flex items-end space-x-2">
-                <div className="flex-1">
-                  <Input
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Ask about your scooter..."
-                    className="min-h-[44px] resize-none"
-                    disabled={isTyping}
-                    maxLength={500}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    accept="image/*,.pdf,.doc,.docx,.txt"
                   />
+                  
+                  <p className="text-xs text-muted-foreground mt-2 text-center">
+                    Ask about battery, brakes, charging, or any scooter issues. You can also attach images or files.
+                  </p>
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="min-h-[44px] px-3"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isTyping}
-                >
-                  <Paperclip className="h-4 w-4" />
-                </Button>
-                <Button 
-                  type="submit" 
-                  size="sm"
-                  className="min-h-[44px] px-4"
-                  disabled={(!newMessage.trim() && !selectedFile) || isTyping}
-                >
-                  {isTyping ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                </Button>
-              </form>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                onChange={handleFileSelect}
-                className="hidden"
-                accept="image/*,.pdf,.doc,.docx,.txt"
-              />
-              
-              <p className="text-xs text-muted-foreground mt-2 text-center">
-                Ask about battery, brakes, charging, or any scooter issues. You can also attach images or files.
-              </p>
+              </div>
             </div>
-          </div>
-        </div>
+          </TabsContent>
+
+          <TabsContent value="tickets" className="space-y-4">
+            <MyTickets />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
