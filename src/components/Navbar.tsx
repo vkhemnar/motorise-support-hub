@@ -101,9 +101,7 @@ export const Navbar = () => {
         {/* Mobile Navigation */}
         {isOpen && <div className="md:hidden absolute top-14 sm:top-16 left-0 right-0 bg-white border-b border-border shadow-lg">
             <div className="px-3 sm:px-4 py-3 sm:py-4 space-y-2 sm:space-y-3">
-              {navItems.map(item => <Link key={item.path} to={item.path} className={`block px-2 sm:px-3 py-2 rounded-md text-sm sm:text-base ${isActive(item.path) ? 'bg-primary text-white' : 'text-muted-foreground hover:text-primary hover:bg-secondary'} transition-colors duration-200`} onClick={() => setIsOpen(false)}>
-                  {item.name}
-                </Link>)}
+              {navItems.map(item => {})}
               
               {user && <div className="pt-3 border-t border-border space-y-2">
                   <div className="px-2 sm:px-3 py-2 text-sm text-muted-foreground">
