@@ -52,7 +52,7 @@ export const SupportCards = () => {
 
         {/* Contact Info */}
         <div className="mt-16 text-center">
-          <div className="bg-[var(--gradient-card)] rounded-2xl p-8 shadow-[var(--shadow-card)]">
+          <div className="bg-[var(--gradient-card)] rounded-2xl p-8 shadow-[var(--shadow-card)] my-0 mx-0 px-[33px]">
             <h3 className="text-2xl font-bold text-navy mb-6 my-0">Need More Help?</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="flex items-center justify-center space-x-3">
