@@ -44,9 +44,17 @@ export const ChatInterface = () => {
   // Ensure user exists in Supabase when component mounts
   useEffect(() => {
     if (user?.phone && user?.role) {
-      createOrUpdateUser(user.phone, user.role).catch(console.error);
+      console.log('Creating/updating user on mount:', { phone: user.phone, role: user.role });
+      createOrUpdateUser(user.phone, user.role).catch((error) => {
+        console.error('Failed to create/update user on mount:', error);
+        toast({
+          title: "User Setup Error",
+          description: "Failed to set up user account. Please refresh the page.",
+          variant: "destructive",
+        });
+      });
     }
-  }, [user, createOrUpdateUser]);
+  }, [user, createOrUpdateUser, toast]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

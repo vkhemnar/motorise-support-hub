@@ -14,29 +14,49 @@ export const useUsers = () => {
 
   const createOrUpdateUser = async (phoneNumber: string, role: 'admin' | 'customer'): Promise<void> => {
     console.log('CreateOrUpdateUser called with:', { phoneNumber, role });
+    
+    if (!phoneNumber || !role) {
+      console.error('Invalid parameters for createOrUpdateUser:', { phoneNumber, role });
+      throw new Error('Phone number and role are required');
+    }
+    
     setIsLoading(true);
     try {
-      const { error } = await supabase
+      console.log('Attempting to upsert user to Supabase...');
+      const { data, error } = await supabase
         .from('users')
         .upsert([
           {
             phone_number: phoneNumber,
             role: role,
           }
-        ]);
+        ], {
+          onConflict: 'phone_number'
+        })
+        .select();
 
       if (error) {
-        console.error('Supabase error in createOrUpdateUser:', error);
+        console.error('Supabase error in createOrUpdateUser:', {
+          error,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+          phoneNumber,
+          role
+        });
         throw error;
       }
-      console.log('User created/updated successfully');
+      console.log('User created/updated successfully:', data);
     } catch (error) {
-      console.error('Error creating/updating user:', {
+      console.error('Caught error in createOrUpdateUser:', {
         error,
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        code: error?.code,
+        phoneNumber,
+        role
       });
       throw error;
     } finally {
