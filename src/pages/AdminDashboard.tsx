@@ -877,9 +877,14 @@ export const AdminDashboard = () => {
                                 <h4 className="font-medium text-sm text-muted-foreground">Question:</h4>
                                 <p className="font-medium">{faq.question}</p>
                               </div>
-                               <div>
-                                 <h4 className="font-medium text-sm text-muted-foreground">Response:</h4>
-                                 <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap break-words">{faq.response}</div>
+                               <div className="bg-primary/5 rounded-lg p-3">
+                                 <div className="flex items-start gap-2">
+                                   <Bot className="h-4 w-4 text-primary mt-0.5" />
+                                   <div className="flex-1">
+                                     <p className="text-sm font-medium">Response:</p>
+                                     <div className="text-sm whitespace-pre-wrap break-words">{faq.response}</div>
+                                   </div>
+                                 </div>
                                </div>
                             </div>
                             
