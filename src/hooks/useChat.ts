@@ -176,20 +176,45 @@ export const useChat = () => {
   };
 
   const sendMessage = async (question: string, file?: File): Promise<void> => {
-    if (!user?.phone || (!question.trim() && !file)) return;
+    console.log('SendMessage called with:', { 
+      userPhone: user?.phone, 
+      question, 
+      hasFile: !!file,
+      user 
+    });
+    
+    if (!user?.phone || (!question.trim() && !file)) {
+      console.error('SendMessage validation failed:', {
+        hasUserPhone: !!user?.phone,
+        hasQuestion: !!question.trim(),
+        hasFile: !!file
+      });
+      return;
+    }
 
     setIsTyping(true);
 
     try {
       let fileUrl = null;
       if (file) {
+        console.log('Uploading file:', file.name);
         fileUrl = await uploadFile(file);
+        console.log('File uploaded:', fileUrl);
       }
 
       // Search for bot response
+      console.log('Searching FAQs for:', question || 'File uploaded');
       const botResponse = await searchFAQs(question || 'File uploaded');
+      console.log('Bot response:', botResponse);
 
       // Save to database
+      console.log('Saving to database:', {
+        user_phone: user.phone,
+        question: question.trim() || 'File uploaded',
+        bot_response: botResponse,
+        file_url: fileUrl,
+      });
+      
       const { data, error } = await supabase
         .from('chats')
         .insert([
@@ -205,12 +230,22 @@ export const useChat = () => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
+      console.log('Message saved successfully:', data);
       // Add to local state
       setMessages(prev => [...prev, data]);
     } catch (error) {
-      console.error('Error sending message:', error);
+      console.error('Error sending message (detailed):', {
+        error,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
       throw error;
     } finally {
       setIsTyping(false);

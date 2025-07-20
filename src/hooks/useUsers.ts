@@ -13,6 +13,7 @@ export const useUsers = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const createOrUpdateUser = async (phoneNumber: string, role: 'admin' | 'customer'): Promise<void> => {
+    console.log('CreateOrUpdateUser called with:', { phoneNumber, role });
     setIsLoading(true);
     try {
       const { error } = await supabase
@@ -24,9 +25,19 @@ export const useUsers = () => {
           }
         ]);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error in createOrUpdateUser:', error);
+        throw error;
+      }
+      console.log('User created/updated successfully');
     } catch (error) {
-      console.error('Error creating/updating user:', error);
+      console.error('Error creating/updating user:', {
+        error,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      });
       throw error;
     } finally {
       setIsLoading(false);
