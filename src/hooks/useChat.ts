@@ -76,7 +76,7 @@ export const useChat = () => {
 
         if (data && data.length > 0) {
           // If specific order ID mentioned, find that order
-          if (orderIdMatch) {
+          if (orderIdMatch && orderIdMatch[0]) {
             const specificOrder = data.find(order => 
               order.order_id.toLowerCase() === orderIdMatch[0].toLowerCase()
             );
@@ -90,9 +90,16 @@ export const useChat = () => {
               return `I couldn't find order ${orderIdMatch[0]} associated with your phone number. Here are all your orders:\n\n${ordersList}`;
             }
           } else {
-            // Return latest order status
-            const latestOrder = data[0];
-            return `Your latest order ${latestOrder.order_id} for ${latestOrder.product} is currently: ${latestOrder.status}. Order placed on ${new Date(latestOrder.created_at).toLocaleDateString()}.`;
+            // No specific order ID mentioned, return all orders
+            if (data.length === 1) {
+              const latestOrder = data[0];
+              return `Your order ${latestOrder.order_id} for ${latestOrder.product} is currently: ${latestOrder.status}. Order placed on ${new Date(latestOrder.created_at).toLocaleDateString()}.`;
+            } else {
+              const ordersList = data.map(order => 
+                `${order.order_id} - ${order.product} (${order.status})`
+              ).join('\n');
+              return `Here are all your orders:\n\n${ordersList}`;
+            }
           }
         } else {
           return "I couldn't find any orders associated with your phone number. If you've recently placed an order, it may take a few minutes to appear in our system.";
