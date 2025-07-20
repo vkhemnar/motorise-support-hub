@@ -23,9 +23,6 @@ export const Navbar = () => {
     }, {
       name: 'My Tickets',
       path: '/tickets'
-    }, {
-      name: 'FAQ',
-      path: '/faq'
     }])
   ] : [{
     name: 'Home',
