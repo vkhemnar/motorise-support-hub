@@ -3,7 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -16,7 +19,12 @@ import {
   Phone,
   Calendar,
   User,
-  Bot
+  Bot,
+  HelpCircle,
+  Plus,
+  Edit,
+  Trash2,
+  Save
 } from 'lucide-react';
 
 interface ChatMessage {
@@ -30,14 +38,31 @@ interface ChatMessage {
   created_at: string;
 }
 
+interface FAQ {
+  id: string;
+  question: string;
+  response: string;
+}
+
 export const AdminDashboard = () => {
   const [chats, setChats] = useState<ChatMessage[]>([]);
   const [filteredChats, setFilteredChats] = useState<ChatMessage[]>([]);
+  const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
+  const [faqLoading, setFaqLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [phoneFilter, setPhoneFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
+  const [activeTab, setActiveTab] = useState('chats');
+  
+  // FAQ management state
+  const [isAddFaqOpen, setIsAddFaqOpen] = useState(false);
+  const [isEditFaqOpen, setIsEditFaqOpen] = useState(false);
+  const [editingFaq, setEditingFaq] = useState<FAQ | null>(null);
+  const [newFaqQuestion, setNewFaqQuestion] = useState('');
+  const [newFaqResponse, setNewFaqResponse] = useState('');
+  
   const { toast } = useToast();
 
   // Load all chats
@@ -168,8 +193,144 @@ export const AdminDashboard = () => {
     return new Date(dateString).toLocaleString();
   };
 
+  // Load FAQs
+  const loadFaqs = async () => {
+    setFaqLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('faqs')
+        .select('*')
+        .order('question', { ascending: true });
+
+      if (error) throw error;
+      setFaqs(data || []);
+    } catch (error) {
+      console.error('Error loading FAQs:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load FAQs. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setFaqLoading(false);
+    }
+  };
+
+  // Add new FAQ
+  const addFaq = async () => {
+    if (!newFaqQuestion.trim() || !newFaqResponse.trim()) {
+      toast({
+        title: "Error",
+        description: "Please fill in both question and response.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('faqs')
+        .insert([
+          {
+            question: newFaqQuestion.trim(),
+            response: newFaqResponse.trim()
+          }
+        ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "FAQ added successfully."
+      });
+
+      setNewFaqQuestion('');
+      setNewFaqResponse('');
+      setIsAddFaqOpen(false);
+      loadFaqs();
+    } catch (error) {
+      console.error('Error adding FAQ:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add FAQ. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Update FAQ
+  const updateFaq = async () => {
+    if (!editingFaq || !editingFaq.question.trim() || !editingFaq.response.trim()) {
+      toast({
+        title: "Error",
+        description: "Please fill in both question and response.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('faqs')
+        .update({
+          question: editingFaq.question.trim(),
+          response: editingFaq.response.trim()
+        })
+        .eq('id', editingFaq.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "FAQ updated successfully."
+      });
+
+      setEditingFaq(null);
+      setIsEditFaqOpen(false);
+      loadFaqs();
+    } catch (error) {
+      console.error('Error updating FAQ:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update FAQ. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Delete FAQ
+  const deleteFaq = async (faqId: string) => {
+    if (!confirm('Are you sure you want to delete this FAQ?')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('faqs')
+        .delete()
+        .eq('id', faqId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "FAQ deleted successfully."
+      });
+
+      loadFaqs();
+    } catch (error) {
+      console.error('Error deleting FAQ:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete FAQ. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   useEffect(() => {
     loadChats();
+    loadFaqs();
   }, []);
 
   useEffect(() => {
@@ -253,171 +414,348 @@ export const AdminDashboard = () => {
           </Card>
         </div>
 
-        {/* Filters */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="h-5 w-5" />
-              Filters & Search
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search chats..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              
-              <Input
-                placeholder="Filter by phone number..."
-                value={phoneFilter}
-                onChange={(e) => setPhoneFilter(e.target.value)}
-              />
-              
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Filter by status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="unsatisfied">Unsatisfied Only</SelectItem>
-                  <SelectItem value="resolved">Resolved</SelectItem>
-                  <SelectItem value="unresolved">Unresolved</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Select value={dateFilter} onValueChange={setDateFilter}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Filter by date" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Time</SelectItem>
-                  <SelectItem value="today">Today</SelectItem>
-                  <SelectItem value="week">Last Week</SelectItem>
-                  <SelectItem value="month">Last Month</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Tabbed Content */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="chats" className="flex items-center gap-2">
+              <MessageSquare className="h-4 w-4" />
+              Chat Logs
+            </TabsTrigger>
+            <TabsTrigger value="faqs" className="flex items-center gap-2">
+              <HelpCircle className="h-4 w-4" />
+              FAQ Manager
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Chat Logs */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Chat Logs ({filteredChats.length})</CardTitle>
-            <CardDescription>Customer support conversations and escalations</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {filteredChats.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">
-                  No chat logs found matching your criteria.
+          {/* Chat Logs Tab */}
+          <TabsContent value="chats" className="space-y-6">
+            {/* Filters */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Filter className="h-5 w-5" />
+                  Filters & Search
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search chats..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  
+                  <Input
+                    placeholder="Filter by phone number..."
+                    value={phoneFilter}
+                    onChange={(e) => setPhoneFilter(e.target.value)}
+                  />
+                  
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="unsatisfied">Unsatisfied Only</SelectItem>
+                      <SelectItem value="resolved">Resolved</SelectItem>
+                      <SelectItem value="unresolved">Unresolved</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  <Select value={dateFilter} onValueChange={setDateFilter}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Filter by date" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Time</SelectItem>
+                      <SelectItem value="today">Today</SelectItem>
+                      <SelectItem value="week">Last Week</SelectItem>
+                      <SelectItem value="month">Last Month</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              ) : (
-                filteredChats.map((chat) => (
-                  <div key={chat.id} className="border rounded-lg p-4 space-y-3">
-                    {/* Header */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                          <Phone className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-medium">{chat.user_phone}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm text-muted-foreground">
-                            {formatDate(chat.created_at)}
-                          </span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        {chat.is_unsatisfied && (
-                          <Badge variant="destructive">
-                            <AlertCircle className="h-3 w-3 mr-1" />
-                            Unsatisfied
-                          </Badge>
-                        )}
-                        {chat.resolved ? (
-                          <Badge variant="default" className="bg-green-100 text-green-700">
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Resolved
-                          </Badge>
-                        ) : (
-                          <Button
-                            size="sm"
-                            onClick={() => markAsResolved(chat.id)}
-                            className="h-7"
-                          >
-                            Mark Resolved
-                          </Button>
-                        )}
-                      </div>
-                    </div>
+              </CardContent>
+            </Card>
 
-                    {/* Question */}
-                    <div className="bg-muted/50 rounded-lg p-3">
-                      <div className="flex items-start gap-2">
-                        <User className="h-4 w-4 text-muted-foreground mt-0.5" />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">Customer Question:</p>
-                          <p className="text-sm">{chat.question}</p>
-                        </div>
-                      </div>
+            {/* Chat Logs */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Chat Logs ({filteredChats.length})</CardTitle>
+                <CardDescription>Customer support conversations and escalations</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {filteredChats.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      No chat logs found matching your criteria.
                     </div>
-
-                    {/* Bot Response */}
-                    {chat.bot_response && (
-                      <div className="bg-primary/5 rounded-lg p-3">
-                        <div className="flex items-start gap-2">
-                          <Bot className="h-4 w-4 text-primary mt-0.5" />
-                          <div className="flex-1">
-                            <p className="text-sm font-medium">Bot Response:</p>
-                            <p className="text-sm">{chat.bot_response}</p>
+                  ) : (
+                    filteredChats.map((chat) => (
+                      <div key={chat.id} className="border rounded-lg p-4 space-y-3">
+                        {/* Header */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                              <Phone className="h-4 w-4 text-muted-foreground" />
+                              <span className="font-medium">{chat.user_phone}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">
+                                {formatDate(chat.created_at)}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2">
+                            {chat.is_unsatisfied && (
+                              <Badge variant="destructive">
+                                <AlertCircle className="h-3 w-3 mr-1" />
+                                Unsatisfied
+                              </Badge>
+                            )}
+                            {chat.resolved ? (
+                              <Badge variant="default" className="bg-green-100 text-green-700">
+                                <CheckCircle className="h-3 w-3 mr-1" />
+                                Resolved
+                              </Badge>
+                            ) : (
+                              <Button
+                                size="sm"
+                                onClick={() => markAsResolved(chat.id)}
+                                className="h-7"
+                              >
+                                Mark Resolved
+                              </Button>
+                            )}
                           </div>
                         </div>
-                      </div>
-                    )}
 
-                    {/* File Upload */}
-                    {chat.file_url && (
-                      <div className="bg-blue-50 rounded-lg p-3">
-                        <div className="flex items-center gap-2">
-                          <File className="h-4 w-4 text-blue-600" />
-                          <span className="text-sm font-medium">Attached File:</span>
-                          {isImageFile(chat.file_url) ? (
-                            <div className="mt-2">
-                              <img 
-                                src={chat.file_url} 
-                                alt="Uploaded file" 
-                                className="max-w-xs h-auto rounded border"
-                                style={{ maxHeight: '150px' }}
-                              />
+                        {/* Question */}
+                        <div className="bg-muted/50 rounded-lg p-3">
+                          <div className="flex items-start gap-2">
+                            <User className="h-4 w-4 text-muted-foreground mt-0.5" />
+                            <div className="flex-1">
+                              <p className="text-sm font-medium">Customer Question:</p>
+                              <p className="text-sm">{chat.question}</p>
                             </div>
-                          ) : (
-                            <a
-                              href={chat.file_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-600 hover:text-blue-800 underline text-sm"
-                            >
-                              {getFileName(chat.file_url)}
-                            </a>
-                          )}
+                          </div>
+                        </div>
+
+                        {/* Bot Response */}
+                        {chat.bot_response && (
+                          <div className="bg-primary/5 rounded-lg p-3">
+                            <div className="flex items-start gap-2">
+                              <Bot className="h-4 w-4 text-primary mt-0.5" />
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">Bot Response:</p>
+                                <p className="text-sm">{chat.bot_response}</p>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* File Upload */}
+                        {chat.file_url && (
+                          <div className="bg-blue-50 rounded-lg p-3">
+                            <div className="flex items-center gap-2">
+                              <File className="h-4 w-4 text-blue-600" />
+                              <span className="text-sm font-medium">Attached File:</span>
+                              {isImageFile(chat.file_url) ? (
+                                <div className="mt-2">
+                                  <img 
+                                    src={chat.file_url} 
+                                    alt="Uploaded file" 
+                                    className="max-w-xs h-auto rounded border"
+                                    style={{ maxHeight: '150px' }}
+                                  />
+                                </div>
+                              ) : (
+                                <a
+                                  href={chat.file_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-800 underline text-sm"
+                                >
+                                  {getFileName(chat.file_url)}
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* FAQ Manager Tab */}
+          <TabsContent value="faqs" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <HelpCircle className="h-5 w-5" />
+                      FAQ Management
+                    </CardTitle>
+                    <CardDescription>Manage frequently asked questions for the chatbot</CardDescription>
+                  </div>
+                  
+                  <Dialog open={isAddFaqOpen} onOpenChange={setIsAddFaqOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="flex items-center gap-2">
+                        <Plus className="h-4 w-4" />
+                        Add FAQ
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[600px]">
+                      <DialogHeader>
+                        <DialogTitle>Add New FAQ</DialogTitle>
+                        <DialogDescription>
+                          Create a new frequently asked question and response for the chatbot.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium">Question</label>
+                          <Input
+                            placeholder="Enter the question..."
+                            value={newFaqQuestion}
+                            onChange={(e) => setNewFaqQuestion(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium">Response</label>
+                          <Textarea
+                            placeholder="Enter the response..."
+                            value={newFaqResponse}
+                            onChange={(e) => setNewFaqResponse(e.target.value)}
+                            rows={6}
+                          />
                         </div>
                       </div>
+                      <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsAddFaqOpen(false)}>
+                          Cancel
+                        </Button>
+                        <Button onClick={addFaq}>
+                          <Save className="h-4 w-4 mr-2" />
+                          Save FAQ
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </CardHeader>
+              
+              <CardContent>
+                {faqLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                    <p className="text-muted-foreground">Loading FAQs...</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {faqs.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        No FAQs found. Click "Add FAQ" to create your first one.
+                      </div>
+                    ) : (
+                      faqs.map((faq) => (
+                        <div key={faq.id} className="border rounded-lg p-4 space-y-3">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 space-y-2">
+                              <div>
+                                <h4 className="font-medium text-sm text-muted-foreground">Question:</h4>
+                                <p className="font-medium">{faq.question}</p>
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-sm text-muted-foreground">Response:</h4>
+                                <p className="text-sm text-muted-foreground">{faq.response}</p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center gap-2 ml-4">
+                              <Dialog open={isEditFaqOpen && editingFaq?.id === faq.id} onOpenChange={(open) => {
+                                setIsEditFaqOpen(open);
+                                if (!open) setEditingFaq(null);
+                              }}>
+                                <DialogTrigger asChild>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setEditingFaq({ ...faq })}
+                                  >
+                                    <Edit className="h-4 w-4" />
+                                  </Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[600px]">
+                                  <DialogHeader>
+                                    <DialogTitle>Edit FAQ</DialogTitle>
+                                    <DialogDescription>
+                                      Update the question and response for this FAQ.
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  {editingFaq && (
+                                    <div className="space-y-4">
+                                      <div>
+                                        <label className="text-sm font-medium">Question</label>
+                                        <Input
+                                          value={editingFaq.question}
+                                          onChange={(e) => setEditingFaq({ ...editingFaq, question: e.target.value })}
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="text-sm font-medium">Response</label>
+                                        <Textarea
+                                          value={editingFaq.response}
+                                          onChange={(e) => setEditingFaq({ ...editingFaq, response: e.target.value })}
+                                          rows={6}
+                                        />
+                                      </div>
+                                    </div>
+                                  )}
+                                  <DialogFooter>
+                                    <Button variant="outline" onClick={() => {
+                                      setIsEditFaqOpen(false);
+                                      setEditingFaq(null);
+                                    }}>
+                                      Cancel
+                                    </Button>
+                                    <Button onClick={updateFaq}>
+                                      <Save className="h-4 w-4 mr-2" />
+                                      Update FAQ
+                                    </Button>
+                                  </DialogFooter>
+                                </DialogContent>
+                              </Dialog>
+                              
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => deleteFaq(faq.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
                     )}
                   </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
