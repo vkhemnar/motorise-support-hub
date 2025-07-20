@@ -244,7 +244,7 @@ export const ChatInterface = () => {
                         
                         {/* Feedback buttons */}
                         {!message.is_unsatisfied && (
-                          <div className="flex items-center space-x-1">
+                          <div className="flex items-center space-x-2">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -259,12 +259,13 @@ export const ChatInterface = () => {
                               <ThumbsUp className="h-3 w-3" />
                             </Button>
                             <Button
-                              variant="ghost"
+                              variant="outline"
                               size="sm"
-                              className="h-6 w-6 p-0 hover:bg-red-100 hover:text-red-600"
+                              className="text-xs px-2 py-1 h-7 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
                               onClick={() => handleUnsatisfied(message.id)}
                             >
-                              <ThumbsDown className="h-3 w-3" />
+                              <AlertCircle className="h-3 w-3 mr-1" />
+                              Not satisfied – escalate this
                             </Button>
                           </div>
                         )}
