@@ -810,9 +810,10 @@ export const AdminDashboard = () => {
                   
                   <Dialog open={isAddFaqOpen} onOpenChange={setIsAddFaqOpen}>
                     <DialogTrigger asChild>
-                      <Button className="flex items-center gap-2">
-                        <Plus className="h-4 w-4" />
-                        Add FAQ
+                      <Button className="flex items-center gap-2 text-xs sm:text-sm px-3 py-2 sm:px-4 sm:py-2">
+                        <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
+                        <span className="hidden sm:inline">Add FAQ</span>
+                        <span className="sm:hidden">Add</span>
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[600px]">
@@ -878,7 +879,7 @@ export const AdminDashboard = () => {
                               </div>
                                <div>
                                  <h4 className="font-medium text-sm text-muted-foreground">Response:</h4>
-                                 <p className="text-sm text-muted-foreground leading-relaxed">{faq.response}</p>
+                                 <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap break-words">{faq.response}</div>
                                </div>
                             </div>
                             
