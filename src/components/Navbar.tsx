@@ -142,12 +142,6 @@ export const Navbar = () => {
             }}>
                     Sign In
                   </Button>
-                  <Button className="w-full btn-electric text-sm" onClick={() => {
-              navigate('/login');
-              setIsOpen(false);
-            }}>
-                    Get Support
-                  </Button>
                 </div>}
             </div>
           </div>}
