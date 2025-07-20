@@ -13,22 +13,21 @@ export const Navbar = () => {
     logout
   } = useAuth();
   const isActive = (path: string) => location.pathname === path;
-  const navItems = user ? [{
-    name: 'Home',
-    path: '/'
-  }, ...(user.role === 'admin' ? [{
-    name: 'Dashboard',
-    path: '/admin'
-  }] : [{
-    name: 'Support Chat',
-    path: '/chat'
-  }, {
-    name: 'My Tickets',
-    path: '/tickets'
-  }, {
-    name: 'FAQ',
-    path: '/faq'
-  }])] : [{
+  const navItems = user ? [
+    ...(user.role === 'admin' ? [{
+      name: 'Dashboard',
+      path: '/admin'
+    }] : [{
+      name: 'Support Chat',
+      path: '/chat'
+    }, {
+      name: 'My Tickets',
+      path: '/tickets'
+    }, {
+      name: 'FAQ',
+      path: '/faq'
+    }])
+  ] : [{
     name: 'Home',
     path: '/'
   }, {
