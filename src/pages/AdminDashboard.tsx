@@ -24,7 +24,10 @@ import {
   Plus,
   Edit,
   Trash2,
-  Save
+  Save,
+  Package,
+  Upload,
+  Download
 } from 'lucide-react';
 
 interface ChatMessage {
@@ -44,12 +47,23 @@ interface FAQ {
   response: string;
 }
 
+interface Order {
+  id: string;
+  order_id: string;
+  phone_number: string;
+  product: string;
+  status: string;
+  created_at: string;
+}
+
 export const AdminDashboard = () => {
   const [chats, setChats] = useState<ChatMessage[]>([]);
   const [filteredChats, setFilteredChats] = useState<ChatMessage[]>([]);
   const [faqs, setFaqs] = useState<FAQ[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [faqLoading, setFaqLoading] = useState(false);
+  const [orderLoading, setOrderLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [phoneFilter, setPhoneFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -62,6 +76,15 @@ export const AdminDashboard = () => {
   const [editingFaq, setEditingFaq] = useState<FAQ | null>(null);
   const [newFaqQuestion, setNewFaqQuestion] = useState('');
   const [newFaqResponse, setNewFaqResponse] = useState('');
+
+  // Order management state
+  const [isAddOrderOpen, setIsAddOrderOpen] = useState(false);
+  const [newOrderId, setNewOrderId] = useState('');
+  const [newOrderPhone, setNewOrderPhone] = useState('');
+  const [newOrderProduct, setNewOrderProduct] = useState('');
+  const [newOrderStatus, setNewOrderStatus] = useState('Pending');
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [isUploadingCsv, setIsUploadingCsv] = useState(false);
   
   const { toast } = useToast();
 
@@ -328,10 +351,164 @@ export const AdminDashboard = () => {
     }
   };
 
+  // Load Orders
+  const loadOrders = async () => {
+    setOrderLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setOrders(data || []);
+    } catch (error) {
+      console.error('Error loading orders:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load orders. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setOrderLoading(false);
+    }
+  };
+
+  // Add new order
+  const addOrder = async () => {
+    if (!newOrderId.trim() || !newOrderPhone.trim() || !newOrderProduct.trim()) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .insert([
+          {
+            order_id: newOrderId.trim(),
+            phone_number: newOrderPhone.trim(),
+            product: newOrderProduct.trim(),
+            status: newOrderStatus
+          }
+        ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Order added successfully."
+      });
+
+      setNewOrderId('');
+      setNewOrderPhone('');
+      setNewOrderProduct('');
+      setNewOrderStatus('Pending');
+      setIsAddOrderOpen(false);
+      loadOrders();
+    } catch (error) {
+      console.error('Error adding order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add order. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Parse and upload CSV
+  const uploadCsv = async () => {
+    if (!csvFile) {
+      toast({
+        title: "Error",
+        description: "Please select a CSV file to upload.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsUploadingCsv(true);
+    
+    try {
+      const text = await csvFile.text();
+      const lines = text.split('\n').filter(line => line.trim());
+      
+      if (lines.length < 2) {
+        throw new Error('CSV file must contain a header row and at least one data row.');
+      }
+
+      // Parse CSV (expecting: Order ID, Phone Number, Product, Status)
+      const orders = [];
+      const header = lines[0].toLowerCase();
+      
+      // Check if header contains required columns
+      if (!header.includes('order') || !header.includes('phone') || !header.includes('product')) {
+        throw new Error('CSV must contain columns for Order ID, Phone Number, and Product.');
+      }
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+        
+        if (values.length >= 3 && values[0] && values[1] && values[2]) {
+          orders.push({
+            order_id: values[0],
+            phone_number: values[1],
+            product: values[2],
+            status: values[3] || 'Pending'
+          });
+        }
+      }
+
+      if (orders.length === 0) {
+        throw new Error('No valid orders found in CSV file.');
+      }
+
+      const { error } = await supabase
+        .from('orders')
+        .insert(orders);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: `Successfully uploaded ${orders.length} orders.`
+      });
+
+      setCsvFile(null);
+      loadOrders();
+    } catch (error) {
+      console.error('Error uploading CSV:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to upload CSV. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUploadingCsv(false);
+    }
+  };
+
+  // Generate CSV template
+  const downloadCsvTemplate = () => {
+    const csvContent = "Order ID,Phone Number,Product,Status\nORD12345,1234567890,Electric Scooter Model X,Pending\nORD12346,9876543210,Helmet - Black,Shipped";
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'orders_template.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   useEffect(() => {
     console.log('AdminDashboard mounted, loading data...');
     loadChats();
     loadFaqs();
+    loadOrders();
   }, []);
 
   useEffect(() => {
@@ -417,7 +594,7 @@ export const AdminDashboard = () => {
 
         {/* Tabbed Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="chats" className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
               Chat Logs
@@ -425,6 +602,10 @@ export const AdminDashboard = () => {
             <TabsTrigger value="faqs" className="flex items-center gap-2">
               <HelpCircle className="h-4 w-4" />
               FAQ Manager
+            </TabsTrigger>
+            <TabsTrigger value="orders" className="flex items-center gap-2">
+              <Package className="h-4 w-4" />
+              Manage Orders
             </TabsTrigger>
           </TabsList>
 
@@ -746,6 +927,202 @@ export const AdminDashboard = () => {
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Manage Orders Tab */}
+          <TabsContent value="orders" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Manual Order Entry */}
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="flex items-center gap-2">
+                        <Plus className="h-5 w-5" />
+                        Add New Order
+                      </CardTitle>
+                      <CardDescription>Manually enter order details</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium">Order ID *</label>
+                      <Input
+                        placeholder="e.g., ORD12345"
+                        value={newOrderId}
+                        onChange={(e) => setNewOrderId(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Customer Phone Number *</label>
+                      <Input
+                        placeholder="e.g., 1234567890"
+                        value={newOrderPhone}
+                        onChange={(e) => setNewOrderPhone(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Product Name *</label>
+                      <Input
+                        placeholder="e.g., Electric Scooter Model X"
+                        value={newOrderProduct}
+                        onChange={(e) => setNewOrderProduct(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Delivery Status</label>
+                      <Select value={newOrderStatus} onValueChange={setNewOrderStatus}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Pending">Pending</SelectItem>
+                          <SelectItem value="Processing">Processing</SelectItem>
+                          <SelectItem value="Shipped">Shipped</SelectItem>
+                          <SelectItem value="Delivered">Delivered</SelectItem>
+                          <SelectItem value="Cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <Button onClick={addOrder} className="w-full">
+                      <Save className="h-4 w-4 mr-2" />
+                      Add Order
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* CSV Upload */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Upload className="h-5 w-5" />
+                    Bulk Upload Orders
+                  </CardTitle>
+                  <CardDescription>Upload multiple orders via CSV file</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium">CSV File</label>
+                      <Input
+                        type="file"
+                        accept=".csv"
+                        onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
+                        className="cursor-pointer"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        CSV should contain: Order ID, Phone Number, Product, Status
+                      </p>
+                    </div>
+                    
+                    <div className="flex flex-col gap-2">
+                      <Button 
+                        variant="outline" 
+                        onClick={downloadCsvTemplate}
+                        className="w-full"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download CSV Template
+                      </Button>
+                      
+                      <Button 
+                        onClick={uploadCsv}
+                        disabled={!csvFile || isUploadingCsv}
+                        className="w-full"
+                      >
+                        {isUploadingCsv ? (
+                          <div className="flex items-center gap-2">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            Uploading...
+                          </div>
+                        ) : (
+                          <>
+                            <Upload className="h-4 w-4 mr-2" />
+                            Upload CSV
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Orders List */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Order Management ({orders.length})</CardTitle>
+                <CardDescription>View and manage all orders</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {orderLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                    <p className="text-muted-foreground">Loading orders...</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {orders.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        No orders found. Add your first order using the form above or upload a CSV file.
+                      </div>
+                    ) : (
+                      orders.map((order) => (
+                        <div key={order.id} className="border rounded-lg p-4 space-y-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-2">
+                                <Package className="h-4 w-4 text-muted-foreground" />
+                                <span className="font-medium">{order.order_id}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Phone className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">{order.phone_number}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Calendar className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-sm text-muted-foreground">
+                                  {formatDate(order.created_at)}
+                                </span>
+                              </div>
+                            </div>
+                            
+                            <Badge 
+                              variant={
+                                order.status === 'Delivered' ? 'default' :
+                                order.status === 'Shipped' ? 'secondary' :
+                                order.status === 'Cancelled' ? 'destructive' :
+                                'outline'
+                              }
+                              className={
+                                order.status === 'Delivered' ? 'bg-green-100 text-green-700' :
+                                order.status === 'Shipped' ? 'bg-blue-100 text-blue-700' :
+                                ''
+                              }
+                            >
+                              {order.status}
+                            </Badge>
+                          </div>
+
+                          <div className="bg-muted/50 rounded-lg p-3">
+                            <div className="flex items-center gap-2">
+                              <Package className="h-4 w-4 text-muted-foreground" />
+                              <div>
+                                <p className="text-sm font-medium">Product:</p>
+                                <p className="text-sm">{order.product}</p>
+                              </div>
                             </div>
                           </div>
                         </div>
