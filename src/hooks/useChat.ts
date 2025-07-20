@@ -83,7 +83,11 @@ export const useChat = () => {
             if (specificOrder) {
               return `Your order ${specificOrder.order_id} for ${specificOrder.product} is currently: ${specificOrder.status}. Order placed on ${new Date(specificOrder.created_at).toLocaleDateString()}.`;
             } else {
-              return `I couldn't find order ${orderIdMatch[0]} associated with your phone number. Please check the order ID or contact support.`;
+              // If order is not matched, return all available orders
+              const ordersList = data.map(order => 
+                `${order.order_id} - ${order.product} (${order.status})`
+              ).join('\n');
+              return `I couldn't find order ${orderIdMatch[0]} associated with your phone number. Here are all your orders:\n\n${ordersList}`;
             }
           } else {
             // Return latest order status
