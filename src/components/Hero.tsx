@@ -87,10 +87,6 @@ export const Hero = () => {
               <div className="text-sm text-muted-foreground">Uptime</div>
             </div>
             
-            <div className="absolute -top-6 -right-6 bg-white rounded-xl shadow-[var(--shadow-card)] p-4 card-hover">
-              <div className="text-2xl font-bold text-accent">5 min</div>
-              <div className="text-sm text-muted-foreground">Avg Response</div>
-            </div>
           </div>
         </div>
       </div>
