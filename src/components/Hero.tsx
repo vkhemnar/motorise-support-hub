@@ -14,14 +14,14 @@ export const Hero = () => {
     console.log('Get Support button clicked, navigating to /login');
     navigate('/login');
   };
-  return <section className="relative min-h-screen flex items-center justify-center bg-[var(--gradient-card)] overflow-hidden">
+  return <section className="relative flex items-center justify-center bg-[var(--gradient-card)] overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-pattern opacity-5 my-0 py-0 mx-0 px-0"></div>
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid lg:grid-cols-2 gap-8 items-center">
           {/* Content */}
-          <div className="space-y-8 fade-in">
+          <div className="space-y-6 fade-in">
             <div className="space-y-4">
               <h1 className="text-4xl md:text-6xl font-bold text-navy leading-tight">
                 Need Help?
@@ -43,7 +43,7 @@ export const Hero = () => {
             </div>
 
             {/* Features */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-4">
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-primary/10 rounded-lg">
                   <Clock className="h-5 w-5 text-primary" />
