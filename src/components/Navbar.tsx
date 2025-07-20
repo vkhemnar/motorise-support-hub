@@ -40,7 +40,19 @@ export const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map(item => {})}
+            {navItems.map(item => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive(item.path)
+                    ? 'text-primary bg-primary/10'
+                    : 'text-muted-foreground hover:text-primary hover:bg-muted/50'
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
           </div>
 
            {/* Right side actions */}
@@ -101,7 +113,20 @@ export const Navbar = () => {
         {/* Mobile Navigation */}
         {isOpen && <div className="md:hidden absolute top-14 sm:top-16 left-0 right-0 bg-white border-b border-border shadow-lg">
             <div className="px-3 sm:px-4 py-3 sm:py-4 space-y-2 sm:space-y-3">
-              {navItems.map(item => {})}
+              {navItems.map(item => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`block px-2 sm:px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive(item.path)
+                      ? 'text-primary bg-primary/10'
+                      : 'text-muted-foreground hover:text-primary hover:bg-muted/50'
+                  }`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              ))}
               
               {user && <div className="pt-3 border-t border-border space-y-2">
                   <div className="px-2 sm:px-3 py-2 text-sm text-muted-foreground">
