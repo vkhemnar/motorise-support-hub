@@ -13,15 +13,13 @@ export const Navbar = () => {
     logout
   } = useAuth();
   const isActive = (path: string) => location.pathname === path;
-  const navItems = user ? [
-    ...(user.role === 'admin' ? [{
-      name: 'Dashboard',
-      path: '/admin'
-    }] : [{
-      name: 'Support Chat',
-      path: '/chat'
-    }])
-  ] : [{
+  const navItems = user ? [...(user.role === 'admin' ? [{
+    name: 'Dashboard',
+    path: '/admin'
+  }] : [{
+    name: 'Support Chat',
+    path: '/chat'
+  }])] : [{
     name: 'Home',
     path: '/'
   }];
@@ -42,9 +40,7 @@ export const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map(item => <Link key={item.path} to={item.path} className={`nav-item ${isActive(item.path) ? 'active' : ''}`}>
-                {item.name}
-              </Link>)}
+            {navItems.map(item => {})}
           </div>
 
            {/* Right side actions */}
@@ -114,9 +110,9 @@ export const Navbar = () => {
                     {user.phone} ({user.role})
                   </div>
                   <Button variant="outline" className="w-full text-sm" onClick={() => {
-                    handleLogout();
-                    setIsOpen(false);
-                  }}>
+              handleLogout();
+              setIsOpen(false);
+            }}>
                     <LogOut className="mr-2 h-3 w-3" />
                     Logout
                   </Button>
