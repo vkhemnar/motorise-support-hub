@@ -160,14 +160,29 @@ export const Navbar = () => {
                   {item.name}
                 </Link>
               ))}
-              <div className="pt-4 space-y-2">
-                <Button variant="outline" className="w-full">
-                  Sign In
-                </Button>
-                <Button className="w-full btn-electric">
-                  Get Support
-                </Button>
-              </div>
+              {!user && (
+                <div className="pt-4 space-y-2">
+                  <Button 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => {
+                      navigate('/login');
+                      setIsOpen(false);
+                    }}
+                  >
+                    Sign In
+                  </Button>
+                  <Button 
+                    className="w-full btn-electric"
+                    onClick={() => {
+                      navigate('/login');
+                      setIsOpen(false);
+                    }}
+                  >
+                    Get Support
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}
