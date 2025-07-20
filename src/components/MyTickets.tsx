@@ -52,40 +52,40 @@ export const MyTickets = () => {
   }
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-2xl font-semibold">My Tickets</h2>
+    <div className="space-y-3 sm:space-y-4">
+      <h2 className="text-xl sm:text-2xl font-semibold">My Tickets</h2>
       
       {tickets.map((ticket) => {
         const responses = ticketResponses[ticket.id] || [];
         
         return (
           <Card key={ticket.id} className="w-full">
-            <CardHeader>
-              <div className="flex items-start justify-between">
-                <div className="space-y-1">
-                  <CardTitle className="text-lg">{ticket.title}</CardTitle>
-                  <p className="text-sm text-muted-foreground">
+            <CardHeader className="pb-3">
+              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                <div className="space-y-1 flex-1">
+                  <CardTitle className="text-base sm:text-lg break-words">{ticket.title}</CardTitle>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     Created {format(new Date(ticket.created_at), 'MMM dd, yyyy at HH:mm')}
                   </p>
                 </div>
-                <Badge className={getStatusColor(ticket.status)}>
+                <Badge className={`${getStatusColor(ticket.status)} text-xs flex-shrink-0`}>
                   {ticket.status.replace('_', ' ').toUpperCase()}
                 </Badge>
               </div>
             </CardHeader>
             
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 sm:space-y-4">
               {/* Original Question */}
               <div className="space-y-2">
-                <h4 className="text-sm font-medium text-muted-foreground">Original Question:</h4>
-                <p className="text-sm">{ticket.chat?.question}</p>
+                <h4 className="text-xs sm:text-sm font-medium text-muted-foreground">Original Question:</h4>
+                <p className="text-xs sm:text-sm break-words">{ticket.chat?.question}</p>
               </div>
               
               {/* Bot Response */}
               {ticket.chat?.bot_response && (
                 <div className="space-y-2">
-                  <h4 className="text-sm font-medium text-muted-foreground">Bot Response:</h4>
-                  <p className="text-sm">{ticket.chat.bot_response}</p>
+                  <h4 className="text-xs sm:text-sm font-medium text-muted-foreground">Bot Response:</h4>
+                  <p className="text-xs sm:text-sm break-words">{ticket.chat.bot_response}</p>
                 </div>
               )}
               
@@ -94,10 +94,10 @@ export const MyTickets = () => {
                 <>
                   <Separator />
                   <div className="space-y-3">
-                    <h4 className="text-sm font-medium text-muted-foreground">Support Responses:</h4>
+                    <h4 className="text-xs sm:text-sm font-medium text-muted-foreground">Support Responses:</h4>
                     {responses.map((response) => (
-                      <div key={response.id} className="bg-muted/50 p-3 rounded-md space-y-2">
-                        <div className="flex items-center justify-between">
+                      <div key={response.id} className="bg-muted/50 p-2 sm:p-3 rounded-md space-y-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                           <span className="text-xs text-muted-foreground">Support Team</span>
                           <span className="text-xs text-muted-foreground">
                             {format(new Date(response.created_at), 'MMM dd, yyyy at HH:mm')}
@@ -105,7 +105,7 @@ export const MyTickets = () => {
                         </div>
                         
                         {response.response_text && (
-                          <p className="text-sm">{response.response_text}</p>
+                          <p className="text-xs sm:text-sm break-words">{response.response_text}</p>
                         )}
                         
                         {response.response_file_url && (
@@ -114,7 +114,7 @@ export const MyTickets = () => {
                               href={response.response_file_url} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="text-primary hover:underline text-sm"
+                              className="text-primary hover:underline text-xs sm:text-sm break-all"
                             >
                               View Attachment
                             </a>

@@ -180,16 +180,17 @@ export const ChatInterface = () => {
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-2 sm:p-4">
         <Tabs defaultValue="chat" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="chat" className="flex items-center gap-2">
-              <MessageCircle className="h-4 w-4" />
+          <TabsList className="grid w-full grid-cols-2 mb-3 sm:mb-4">
+            <TabsTrigger value="chat" className="flex items-center gap-1 sm:gap-2 text-sm">
+              <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4" />
               Chat
             </TabsTrigger>
-            <TabsTrigger value="tickets" className="flex items-center gap-2">
-              <Ticket className="h-4 w-4" />
-              My Tickets
+            <TabsTrigger value="tickets" className="flex items-center gap-1 sm:gap-2 text-sm">
+              <Ticket className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="hidden xs:inline">My Tickets</span>
+              <span className="xs:hidden">Tickets</span>
             </TabsTrigger>
           </TabsList>
 
@@ -216,9 +217,9 @@ export const ChatInterface = () => {
                       <div key={message.id} className="space-y-3">
                         {/* User question */}
                         <div className="flex justify-end">
-                          <div className="max-w-[80%] sm:max-w-md">
-                            <div className="bg-primary text-primary-foreground px-4 py-2 rounded-lg rounded-br-sm">
-                              <p className="text-sm">{message.question}</p>
+                          <div className="max-w-[85%] sm:max-w-[80%] md:max-w-md">
+                            <div className="bg-primary text-primary-foreground px-3 sm:px-4 py-2 rounded-lg rounded-br-sm">
+                              <p className="text-sm break-words">{message.question}</p>
                               {message.file_url && (
                                 <div className="mt-2 border-t border-primary-foreground/20 pt-2">
                                   {isImageFile(message.file_url) ? (
@@ -256,9 +257,9 @@ export const ChatInterface = () => {
                         {/* Bot response */}
                         {message.bot_response && (
                           <div className="flex justify-start">
-                            <div className="max-w-[85%] sm:max-w-lg">
-                              <div className="bg-muted px-4 py-2 rounded-lg rounded-bl-sm">
-                                <p className="text-sm">{message.bot_response}</p>
+                            <div className="max-w-[85%] sm:max-w-[80%] md:max-w-lg">
+                              <div className="bg-muted px-3 sm:px-4 py-2 rounded-lg rounded-bl-sm">
+                                <p className="text-sm break-words">{message.bot_response}</p>
                               </div>
                               <div className="flex items-center justify-between mt-2">
                                 <div className="flex items-center space-x-2">
@@ -270,7 +271,7 @@ export const ChatInterface = () => {
                                 
                                 {/* Feedback buttons */}
                                 {!message.is_unsatisfied && (
-                                  <div className="flex items-center space-x-2">
+                                  <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
                                     <Button
                                       variant="ghost"
                                       size="sm"
@@ -291,7 +292,8 @@ export const ChatInterface = () => {
                                       onClick={() => handleUnsatisfied(message.id)}
                                     >
                                       <AlertCircle className="h-3 w-3 mr-1" />
-                                      Not satisfied – escalate this
+                                      <span className="hidden sm:inline">Not satisfied – escalate this</span>
+                                      <span className="sm:hidden">Not satisfied</span>
                                     </Button>
                                   </div>
                                 )}
@@ -369,7 +371,7 @@ export const ChatInterface = () => {
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Ask about your scooter..."
-                        className="min-h-[44px] resize-none"
+                        className="min-h-[40px] sm:min-h-[44px] resize-none text-sm"
                         disabled={isTyping}
                         maxLength={500}
                       />
@@ -378,7 +380,7 @@ export const ChatInterface = () => {
                       type="button"
                       variant="outline"
                       size="sm"
-                      className="min-h-[44px] px-3"
+                      className="min-h-[40px] sm:min-h-[44px] px-2 sm:px-3"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={isTyping}
                     >
@@ -387,7 +389,7 @@ export const ChatInterface = () => {
                     <Button 
                       type="submit" 
                       size="sm"
-                      className="min-h-[44px] px-4"
+                      className="min-h-[40px] sm:min-h-[44px] px-3 sm:px-4"
                       disabled={(!newMessage.trim() && !selectedFile) || isTyping}
                     >
                       {isTyping ? (
