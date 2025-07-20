@@ -596,22 +596,22 @@ export const AdminDashboard = () => {
 
         {/* Tabbed Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-0.5 sm:gap-1">
-            <TabsTrigger value="chats" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-0.5 sm:gap-1 h-auto py-2 sm:py-1">
+            <TabsTrigger value="chats" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-3 sm:py-2">
               <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
               <span className="hidden sm:inline">Chat Logs</span>
               <span className="sm:hidden truncate">Chats</span>
             </TabsTrigger>
-            <TabsTrigger value="tickets" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+            <TabsTrigger value="tickets" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-3 sm:py-2">
               <Ticket className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
               <span className="truncate">Tickets</span>
             </TabsTrigger>
-            <TabsTrigger value="faqs" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+            <TabsTrigger value="faqs" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-3 sm:py-2">
               <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
               <span className="hidden sm:inline">FAQ Manager</span>
               <span className="sm:hidden truncate">FAQs</span>
             </TabsTrigger>
-            <TabsTrigger value="orders" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+            <TabsTrigger value="orders" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3 py-3 sm:py-2">
               <Package className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
               <span className="hidden sm:inline">Manage Orders</span>
               <span className="sm:hidden truncate">Orders</span>
@@ -689,39 +689,42 @@ export const AdminDashboard = () => {
                     filteredChats.map((chat) => (
                       <div key={chat.id} className="border rounded-lg p-4 space-y-3">
                         {/* Header */}
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                             <div className="flex items-center gap-2">
-                              <Phone className="h-4 w-4 text-muted-foreground" />
-                              <span className="font-medium">{chat.user_phone}</span>
+                              <Phone className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                              <span className="font-medium break-all">{chat.user_phone}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Calendar className="h-4 w-4 text-muted-foreground" />
+                              <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                               <span className="text-sm text-muted-foreground">
                                 {formatDate(chat.created_at)}
                               </span>
                             </div>
                           </div>
                           
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             {chat.is_unsatisfied && (
-                              <Badge variant="destructive">
-                                <AlertCircle className="h-3 w-3 mr-1" />
-                                Unsatisfied
+                              <Badge variant="destructive" className="text-xs">
+                                <AlertCircle className="h-3 w-3 mr-1 flex-shrink-0" />
+                                <span className="hidden sm:inline">Unsatisfied</span>
+                                <span className="sm:hidden">Bad</span>
                               </Badge>
                             )}
                             {chat.resolved ? (
-                              <Badge variant="default" className="bg-green-100 text-green-700">
-                                <CheckCircle className="h-3 w-3 mr-1" />
-                                Resolved
+                              <Badge variant="default" className="bg-green-100 text-green-700 text-xs">
+                                <CheckCircle className="h-3 w-3 mr-1 flex-shrink-0" />
+                                <span className="hidden sm:inline">Resolved</span>
+                                <span className="sm:hidden">Done</span>
                               </Badge>
                             ) : (
                               <Button
                                 size="sm"
                                 onClick={() => markAsResolved(chat.id)}
-                                className="h-7"
+                                className="h-7 text-xs px-2 sm:px-3"
                               >
-                                Mark Resolved
+                                <span className="hidden sm:inline">Mark Resolved</span>
+                                <span className="sm:hidden">Resolve</span>
                               </Button>
                             )}
                           </div>
