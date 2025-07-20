@@ -19,10 +19,7 @@ export const Navbar = () => {
   }] : [{
     name: 'Support Chat',
     path: '/chat'
-  }])] : [{
-    name: 'Home',
-    path: '/'
-  }];
+  }])] : [];
   const handleLogout = () => {
     logout();
     navigate('/');
