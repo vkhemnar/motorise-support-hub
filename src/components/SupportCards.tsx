@@ -34,8 +34,8 @@ export const SupportCards = () => {
   }];
   return <section className="py-20 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16 fade-in">
-          <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4">
+        <div className="text-center mb-16 fade-in my-0">
+          <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4 mx-0 px-0 my-px py-0">
             How Can We Help You Today?
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -53,7 +53,7 @@ export const SupportCards = () => {
         {/* Contact Info */}
         <div className="mt-16 text-center">
           <div className="bg-[var(--gradient-card)] rounded-2xl p-8 shadow-[var(--shadow-card)]">
-            <h3 className="text-2xl font-bold text-navy mb-6">Need More Help?</h3>
+            <h3 className="text-2xl font-bold text-navy mb-6 my-0">Need More Help?</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="flex items-center justify-center space-x-3">
                 <Mail className="h-5 w-5 text-primary" />

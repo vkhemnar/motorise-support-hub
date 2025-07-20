@@ -4,20 +4,19 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Headphones, MessageCircle, Clock } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import heroImage from '@/assets/hero-scooter.jpg';
-
 export const Hero = () => {
   console.log('Hero component rendered');
   const navigate = useNavigate();
-  const { user } = useAuth();
-
+  const {
+    user
+  } = useAuth();
   const handleGetSupport = () => {
     console.log('Get Support button clicked, navigating to /login');
     navigate('/login');
   };
-  return (
-    <section className="relative min-h-screen flex items-center justify-center bg-[var(--gradient-card)] overflow-hidden">
+  return <section className="relative min-h-screen flex items-center justify-center bg-[var(--gradient-card)] overflow-hidden">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+      <div className="absolute inset-0 bg-grid-pattern opacity-5 my-px"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -35,12 +34,11 @@ export const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                className="btn-electric text-lg px-8 py-6" 
-                onClick={handleGetSupport}
-                style={{ pointerEvents: 'auto', zIndex: 10 }}
-              >
-                {user ? (user.role === 'admin' ? 'Go to Dashboard' : 'Start Chat') : 'Get Support Now'}
+              <Button className="btn-electric text-lg px-8 py-6" onClick={handleGetSupport} style={{
+              pointerEvents: 'auto',
+              zIndex: 10
+            }}>
+                {user ? user.role === 'admin' ? 'Go to Dashboard' : 'Start Chat' : 'Get Support Now'}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button variant="outline" size="lg" className="text-lg px-8 py-6 btn-outline-electric">
@@ -83,11 +81,7 @@ export const Hero = () => {
           {/* Hero Image */}
           <div className="relative slide-up">
             <div className="relative rounded-2xl overflow-hidden shadow-[var(--shadow-elevation)]">
-              <img
-                src={heroImage}
-                alt="MotoRise Electric Scooter"
-                className="w-full h-auto object-cover"
-              />
+              <img src={heroImage} alt="MotoRise Electric Scooter" className="w-full h-auto object-cover" />
               <div className="absolute inset-0 bg-[var(--gradient-primary)] opacity-10"></div>
             </div>
             
@@ -104,6 +98,5 @@ export const Hero = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
