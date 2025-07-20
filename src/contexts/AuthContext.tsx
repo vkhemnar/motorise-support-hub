@@ -18,7 +18,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Hardcoded admin numbers
-const ADMIN_NUMBERS = ["+919999999999", "+918888888888"];
+const ADMIN_NUMBERS = ["+919999999999", "+918888888888", "2222222222", "3333333333", "4444444444"];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
