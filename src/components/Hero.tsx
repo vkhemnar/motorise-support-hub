@@ -41,9 +41,6 @@ export const Hero = () => {
                 {user ? user.role === 'admin' ? 'Go to Dashboard' : 'Start Chat' : 'Get Support Now'}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button variant="outline" size="lg" className="text-lg px-8 py-6 btn-outline-electric">
-                Browse FAQ
-              </Button>
             </div>
 
             {/* Features */}
