@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Hero } from '@/components/Hero';
-import { SupportCards } from '@/components/SupportCards';
 import { useAuth } from '@/contexts/AuthContext';
 
 const Index = () => {
@@ -27,7 +26,6 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Hero />
-      <SupportCards />
     </div>
   );
 };
