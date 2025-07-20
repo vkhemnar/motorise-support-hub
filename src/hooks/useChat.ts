@@ -189,7 +189,7 @@ export const useChat = () => {
         hasQuestion: !!question.trim(),
         hasFile: !!file
       });
-      return;
+      throw new Error('Invalid input: User phone or message content is missing');
     }
 
     setIsTyping(true);
@@ -198,41 +198,68 @@ export const useChat = () => {
       let fileUrl = null;
       if (file) {
         console.log('Uploading file:', file.name);
-        fileUrl = await uploadFile(file);
-        console.log('File uploaded:', fileUrl);
+        try {
+          fileUrl = await uploadFile(file);
+          console.log('File uploaded successfully:', fileUrl);
+        } catch (fileError) {
+          console.error('File upload error:', fileError);
+          throw new Error(`File upload failed: ${fileError.message}`);
+        }
       }
 
       // Search for bot response
       console.log('Searching FAQs for:', question || 'File uploaded');
-      const botResponse = await searchFAQs(question || 'File uploaded');
-      console.log('Bot response:', botResponse);
+      let botResponse;
+      try {
+        botResponse = await searchFAQs(question || 'File uploaded');
+        console.log('Bot response generated:', botResponse);
+      } catch (faqError) {
+        console.error('FAQ search error:', faqError);
+        botResponse = "I'm sorry, I'm having trouble processing your request right now. Please try again or contact our support team directly.";
+      }
 
       // Save to database
-      console.log('Saving to database:', {
+      console.log('Attempting to save to database:', {
         user_phone: user.phone,
         question: question.trim() || 'File uploaded',
         bot_response: botResponse,
         file_url: fileUrl,
       });
       
+      const insertData = {
+        user_phone: user.phone,
+        question: question.trim() || 'File uploaded',
+        bot_response: botResponse,
+        file_url: fileUrl,
+        is_unsatisfied: false,
+        resolved: false,
+      };
+      
+      console.log('Insert data prepared:', insertData);
+      
       const { data, error } = await supabase
         .from('chats')
-        .insert([
-          {
-            user_phone: user.phone,
-            question: question.trim() || 'File uploaded',
-            bot_response: botResponse,
-            file_url: fileUrl,
-            is_unsatisfied: false,
-            resolved: false,
-          }
-        ])
+        .insert([insertData])
         .select()
         .single();
 
+      console.log('Supabase insert response:', { data, error });
+
       if (error) {
-        console.error('Supabase error:', error);
-        throw error;
+        console.error('Supabase insert error details:', {
+          error,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+          insertData
+        });
+        throw new Error(`Database error: ${error.message}`);
+      }
+
+      if (!data) {
+        console.error('No data returned from insert operation');
+        throw new Error('No data returned from database');
       }
 
       console.log('Message saved successfully:', data);
@@ -241,11 +268,16 @@ export const useChat = () => {
     } catch (error) {
       console.error('Error sending message (detailed):', {
         error,
-        message: error.message,
-        details: error.details,
-        hint: error.hint,
-        code: error.code
+        message: error?.message,
+        name: error?.name,
+        stack: error?.stack
       });
+      
+      // Re-throw with more descriptive error
+      if (error?.message?.includes('Failed to fetch')) {
+        throw new Error('Network error: Unable to connect to the server. Please check your connection and try again.');
+      }
+      
       throw error;
     } finally {
       setIsTyping(false);
