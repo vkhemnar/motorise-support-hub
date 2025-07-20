@@ -4,6 +4,7 @@ import { Menu, X, Zap, User, Settings, LogOut, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
+import logoImage from '@/assets/motorise-logo.jpg';
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
@@ -39,11 +40,13 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 group">
-            <div className="p-2 bg-[var(--gradient-primary)] rounded-lg shadow-[var(--shadow-electric)] group-hover:scale-105 transition-transform duration-200">
-              <Zap className="h-6 w-6 text-white" />
-            </div>
-            <span className="text-xl font-bold text-navy">MotoRise</span>
+          <Link to="/" className="flex items-center space-x-3 group">
+            <img 
+              src={logoImage} 
+              alt="MotoRise Logo" 
+              className="h-10 w-auto object-contain rounded-lg shadow-sm group-hover:scale-105 transition-transform duration-200"
+            />
+            <span className="text-xl font-bold text-navy hidden sm:block">MotoRise</span>
           </Link>
 
           {/* Desktop Navigation */}
