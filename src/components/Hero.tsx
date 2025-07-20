@@ -24,8 +24,7 @@ export const Hero = () => {
           <div className="space-y-8 fade-in">
             <div className="space-y-4">
               <h1 className="text-4xl md:text-6xl font-bold text-navy leading-tight">
-                Need Help with Your 
-                <span className="bg-[var(--gradient-primary)] bg-clip-text text-transparent"> Scooter</span>?
+                Need Help?
               </h1>
               <p className="text-xl text-muted-foreground leading-relaxed">
                 Get instant support from our expert team. Submit tickets, track issues, and get back on the road faster with MotoRise Support.
