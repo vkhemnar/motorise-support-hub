@@ -596,25 +596,25 @@ export const AdminDashboard = () => {
 
         {/* Tabbed Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-1">
-            <TabsTrigger value="chats" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
-              <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden xs:inline">Chat Logs</span>
-              <span className="xs:hidden">Chats</span>
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 gap-0.5 sm:gap-1">
+            <TabsTrigger value="chats" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+              <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="hidden sm:inline">Chat Logs</span>
+              <span className="sm:hidden truncate">Chats</span>
             </TabsTrigger>
-            <TabsTrigger value="tickets" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
-              <Ticket className="h-3 w-3 sm:h-4 sm:w-4" />
-              Tickets
+            <TabsTrigger value="tickets" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+              <Ticket className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="truncate">Tickets</span>
             </TabsTrigger>
-            <TabsTrigger value="faqs" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
-              <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4" />
+            <TabsTrigger value="faqs" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+              <HelpCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
               <span className="hidden sm:inline">FAQ Manager</span>
-              <span className="sm:hidden">FAQs</span>
+              <span className="sm:hidden truncate">FAQs</span>
             </TabsTrigger>
-            <TabsTrigger value="orders" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
-              <Package className="h-3 w-3 sm:h-4 sm:w-4" />
+            <TabsTrigger value="orders" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+              <Package className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
               <span className="hidden sm:inline">Manage Orders</span>
-              <span className="sm:hidden">Orders</span>
+              <span className="sm:hidden truncate">Orders</span>
             </TabsTrigger>
           </TabsList>
 
@@ -1094,19 +1094,19 @@ export const AdminDashboard = () => {
                       </div>
                     ) : (
                       orders.map((order) => (
-                        <div key={order.id} className="border rounded-lg p-4 space-y-3">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
+                        <div key={order.id} className="border rounded-lg p-3 sm:p-4 space-y-3">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
                               <div className="flex items-center gap-2">
-                                <Package className="h-4 w-4 text-muted-foreground" />
-                                <span className="font-medium">{order.order_id}</span>
+                                <Package className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                <span className="font-medium break-all">{order.order_id}</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <Phone className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm text-muted-foreground">{order.phone_number}</span>
+                                <Phone className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                <span className="text-sm text-muted-foreground break-all">{order.phone_number}</span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <Calendar className="h-4 w-4 text-muted-foreground" />
+                                <Calendar className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                                 <span className="text-sm text-muted-foreground">
                                   {formatDate(order.created_at)}
                                 </span>
@@ -1120,11 +1120,11 @@ export const AdminDashboard = () => {
                                 order.status === 'Cancelled' ? 'destructive' :
                                 'outline'
                               }
-                              className={
+                              className={`flex-shrink-0 ${
                                 order.status === 'Delivered' ? 'bg-green-100 text-green-700' :
                                 order.status === 'Shipped' ? 'bg-blue-100 text-blue-700' :
                                 ''
-                              }
+                              }`}
                             >
                               {order.status}
                             </Badge>
