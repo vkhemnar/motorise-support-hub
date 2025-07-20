@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import heroImage from '@/assets/hero-scooter.jpg';
 
 export const Hero = () => {
+  console.log('Hero component rendered');
   const navigate = useNavigate();
   const { user } = useAuth();
 
