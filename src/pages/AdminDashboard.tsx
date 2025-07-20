@@ -539,7 +539,7 @@ export const AdminDashboard = () => {
       <div className="max-w-7xl mx-auto p-3 sm:p-6">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Admin</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Admin Dashboard</h1>
           <p className="text-sm sm:text-base text-muted-foreground">Manage customer support and monitor chat logs</p>
         </div>
 
