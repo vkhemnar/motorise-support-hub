@@ -54,7 +54,7 @@ export const ChatInterface = () => {
         });
       });
     }
-  }, [user, createOrUpdateUser, toast]);
+  }, [user?.phone, user?.role]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
