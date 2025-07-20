@@ -35,7 +35,11 @@ export const Hero = () => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button className="btn-electric text-lg px-8 py-6" onClick={handleGetSupport}>
+              <Button 
+                className="btn-electric text-lg px-8 py-6" 
+                onClick={handleGetSupport}
+                style={{ pointerEvents: 'auto', zIndex: 10 }}
+              >
                 {user ? (user.role === 'admin' ? 'Go to Dashboard' : 'Start Chat') : 'Get Support Now'}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
