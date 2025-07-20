@@ -23,7 +23,7 @@ export const useUsers = () => {
     setIsLoading(true);
     try {
       console.log('Attempting to upsert user to Supabase...');
-      const { data, error } = await supabase
+      const response = await supabase
         .from('users')
         .upsert([
           {
@@ -35,29 +35,42 @@ export const useUsers = () => {
         })
         .select();
 
-      if (error) {
+      console.log('Raw Supabase response:', response);
+
+      if (response.error) {
         console.error('Supabase error in createOrUpdateUser:', {
-          error,
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code,
+          error: response.error,
+          message: response.error.message,
+          details: response.error.details,
+          hint: response.error.hint,
+          code: response.error.code,
           phoneNumber,
           role
         });
-        throw error;
+        throw new Error(`Failed to create/update user: ${response.error.message}`);
       }
-      console.log('User created/updated successfully:', data);
+
+      if (!response.data) {
+        console.error('No data returned from Supabase');
+        throw new Error('No data returned from user creation');
+      }
+
+      console.log('User created/updated successfully:', response.data);
     } catch (error) {
       console.error('Caught error in createOrUpdateUser:', {
         error,
         message: error?.message,
-        details: error?.details,
-        hint: error?.hint,
-        code: error?.code,
+        name: error?.name,
+        stack: error?.stack,
         phoneNumber,
         role
       });
+      
+      // Re-throw with a more descriptive message
+      if (error?.message?.includes('Failed to fetch')) {
+        throw new Error('Network error: Unable to connect to the server. Please check your connection and try again.');
+      }
+      
       throw error;
     } finally {
       setIsLoading(false);
