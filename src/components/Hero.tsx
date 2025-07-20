@@ -10,11 +10,7 @@ export const Hero = () => {
   const { user } = useAuth();
 
   const handleGetSupport = () => {
-    if (user) {
-      navigate(user.role === 'admin' ? '/admin' : '/chat');
-    } else {
-      navigate('/login');
-    }
+    navigate('/login');
   };
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-[var(--gradient-card)] overflow-hidden">
