@@ -52,7 +52,63 @@ export const useChat = () => {
     }
   };
 
+  const checkOrderStatus = async (question: string): Promise<string | null> => {
+    if (!user?.phone) return null;
+
+    const lowerQuestion = question.toLowerCase();
+    
+    // Check if question is about order status
+    const orderKeywords = ['order', 'delivery', 'shipment', 'shipped', 'tracking', 'status'];
+    const hasOrderKeyword = orderKeywords.some(keyword => lowerQuestion.includes(keyword));
+    
+    // Check for order ID pattern (ORD followed by numbers/letters)
+    const orderIdMatch = question.match(/ORD[A-Z0-9]+/i);
+    
+    if (hasOrderKeyword || orderIdMatch) {
+      try {
+        const { data, error } = await supabase
+          .from('orders')
+          .select('*')
+          .eq('phone_number', user.phone)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          // If specific order ID mentioned, find that order
+          if (orderIdMatch) {
+            const specificOrder = data.find(order => 
+              order.order_id.toLowerCase() === orderIdMatch[0].toLowerCase()
+            );
+            if (specificOrder) {
+              return `Your order ${specificOrder.order_id} for ${specificOrder.product} is currently: ${specificOrder.status}. Order placed on ${new Date(specificOrder.created_at).toLocaleDateString()}.`;
+            } else {
+              return `I couldn't find order ${orderIdMatch[0]} associated with your phone number. Please check the order ID or contact support.`;
+            }
+          } else {
+            // Return latest order status
+            const latestOrder = data[0];
+            return `Your latest order ${latestOrder.order_id} for ${latestOrder.product} is currently: ${latestOrder.status}. Order placed on ${new Date(latestOrder.created_at).toLocaleDateString()}.`;
+          }
+        } else {
+          return "I couldn't find any orders associated with your phone number. If you've recently placed an order, it may take a few minutes to appear in our system.";
+        }
+      } catch (error) {
+        console.error('Error checking order status:', error);
+        return "I'm having trouble checking your order status right now. Please try again or contact our support team.";
+      }
+    }
+    
+    return null;
+  };
+
   const searchFAQs = async (question: string): Promise<string> => {
+    // First check if this is an order-related query
+    const orderResponse = await checkOrderStatus(question);
+    if (orderResponse) {
+      return orderResponse;
+    }
+
     try {
       const { data, error } = await supabase
         .from('faqs')
