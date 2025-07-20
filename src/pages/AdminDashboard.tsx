@@ -623,7 +623,7 @@ export const AdminDashboard = () => {
             {/* Filters */}
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                   <Filter className="h-5 w-5" />
                   Filters & Search
                 </CardTitle>
@@ -676,7 +676,7 @@ export const AdminDashboard = () => {
             {/* Chat Logs */}
             <Card>
               <CardHeader>
-                <CardTitle>Chat Logs ({filteredChats.length})</CardTitle>
+                <CardTitle className="text-lg sm:text-xl">Chat Logs ({filteredChats.length})</CardTitle>
                 <CardDescription>Customer support conversations and escalations</CardDescription>
               </CardHeader>
               <CardContent>
@@ -801,7 +801,7 @@ export const AdminDashboard = () => {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                       <HelpCircle className="h-5 w-5" />
                       FAQ Management
                     </CardTitle>
@@ -876,10 +876,10 @@ export const AdminDashboard = () => {
                                 <h4 className="font-medium text-sm text-muted-foreground">Question:</h4>
                                 <p className="font-medium">{faq.question}</p>
                               </div>
-                              <div>
-                                <h4 className="font-medium text-sm text-muted-foreground">Response:</h4>
-                                <p className="text-sm text-muted-foreground">{faq.response}</p>
-                              </div>
+                               <div>
+                                 <h4 className="font-medium text-sm text-muted-foreground">Response:</h4>
+                                 <p className="text-sm text-muted-foreground leading-relaxed">{faq.response}</p>
+                               </div>
                             </div>
                             
                             <div className="flex items-center gap-2 ml-4">
@@ -963,7 +963,7 @@ export const AdminDashboard = () => {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="flex items-center gap-2">
+                      <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                         <Plus className="h-5 w-5" />
                         Add New Order
                       </CardTitle>
