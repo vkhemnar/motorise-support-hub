@@ -10,6 +10,7 @@ export const Hero = () => {
   const { user } = useAuth();
 
   const handleGetSupport = () => {
+    console.log('Get Support button clicked, navigating to /login');
     navigate('/login');
   };
   return (
