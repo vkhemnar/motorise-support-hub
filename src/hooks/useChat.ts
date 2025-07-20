@@ -63,6 +63,7 @@ export const useChat = () => {
     
     // Check for order ID pattern (ORD followed by numbers/letters)
     const orderIdMatch = question.match(/ORD[A-Z0-9]+/i);
+    console.log('Question:', question, 'OrderIdMatch:', orderIdMatch);
     
     if (hasOrderKeyword || orderIdMatch) {
       try {
