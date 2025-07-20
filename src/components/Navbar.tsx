@@ -20,9 +20,6 @@ export const Navbar = () => {
     }] : [{
       name: 'Support Chat',
       path: '/chat'
-    }, {
-      name: 'My Tickets',
-      path: '/tickets'
     }])
   ] : [{
     name: 'Home',
