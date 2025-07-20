@@ -66,11 +66,14 @@ export const useChat = () => {
     
     if (hasOrderKeyword || orderIdMatch) {
       try {
+        console.log('Looking for orders with phone number:', user.phone);
         const { data, error } = await supabase
           .from('orders')
           .select('*')
           .eq('phone_number', user.phone)
           .order('created_at', { ascending: false });
+        
+        console.log('Orders query result:', { data, error });
 
         if (error) throw error;
 
