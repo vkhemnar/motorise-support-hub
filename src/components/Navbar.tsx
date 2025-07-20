@@ -22,8 +22,7 @@ export const Navbar = () => {
   const navItems = user ? [
     { name: 'Home', path: '/' },
     ...(user.role === 'admin' ? [
-      { name: 'Dashboard', path: '/admin' },
-      { name: 'All Tickets', path: '/admin/tickets' }
+      { name: 'Dashboard', path: '/admin' }
     ] : [
       { name: 'Support Chat', path: '/chat' },
       { name: 'My Tickets', path: '/tickets' },

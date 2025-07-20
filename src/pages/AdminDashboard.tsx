@@ -329,6 +329,7 @@ export const AdminDashboard = () => {
   };
 
   useEffect(() => {
+    console.log('AdminDashboard mounted, loading data...');
     loadChats();
     loadFaqs();
   }, []);
