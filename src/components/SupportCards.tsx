@@ -32,8 +32,8 @@ export const SupportCards = () => {
     color: 'bg-destructive',
     href: 'tel:+1-800-MOTORISE'
   }];
-  return <section className="py-20 bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  return <section className="bg-background py-[37px]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-0">
         <div className="text-center mb-16 fade-in my-0">
           
           

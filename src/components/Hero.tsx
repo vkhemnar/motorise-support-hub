@@ -16,7 +16,7 @@ export const Hero = () => {
   };
   return <section className="relative min-h-screen flex items-center justify-center bg-[var(--gradient-card)] overflow-hidden">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-grid-pattern opacity-5 my-px"></div>
+      <div className="absolute inset-0 bg-grid-pattern opacity-5 my-0 py-0 mx-0 px-0"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
