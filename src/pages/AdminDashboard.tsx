@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { AdminTickets } from '@/components/AdminTickets';
 import { 
   MessageSquare, 
   Search,
@@ -27,7 +28,8 @@ import {
   Save,
   Package,
   Upload,
-  Download
+  Download,
+  Ticket
 } from 'lucide-react';
 
 interface ChatMessage {
@@ -594,10 +596,14 @@ export const AdminDashboard = () => {
 
         {/* Tabbed Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="chats" className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4" />
               Chat Logs
+            </TabsTrigger>
+            <TabsTrigger value="tickets" className="flex items-center gap-2">
+              <Ticket className="h-4 w-4" />
+              Tickets
             </TabsTrigger>
             <TabsTrigger value="faqs" className="flex items-center gap-2">
               <HelpCircle className="h-4 w-4" />
@@ -776,6 +782,11 @@ export const AdminDashboard = () => {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Tickets Tab */}
+          <TabsContent value="tickets" className="space-y-6">
+            <AdminTickets />
           </TabsContent>
 
           {/* FAQ Manager Tab */}

@@ -286,12 +286,45 @@ export const useChat = () => {
 
   const markAsUnsatisfied = async (chatId: string): Promise<void> => {
     try {
-      const { error } = await supabase
+      // Get the chat details for the ticket
+      const chat = messages.find(m => m.id === chatId);
+      if (!chat) {
+        throw new Error('Chat not found');
+      }
+
+      // Update the chat record
+      const { error: chatError } = await supabase
         .from('chats')
         .update({ is_unsatisfied: true })
         .eq('id', chatId);
 
-      if (error) throw error;
+      if (chatError) throw chatError;
+
+      // Add to unsatisfied_queries table
+      await supabase
+        .from('unsatisfied_queries')
+        .insert([
+          {
+            chat_id: chatId,
+            user_phone: chat.user_phone,
+            file_url: chat.file_url,
+          }
+        ]);
+
+      // Create a support ticket
+      const ticketTitle = chat.question.length > 50 
+        ? chat.question.substring(0, 50) + '...'
+        : chat.question;
+
+      await supabase
+        .from('tickets')
+        .insert([
+          {
+            chat_id: chatId,
+            user_phone: chat.user_phone,
+            title: ticketTitle
+          }
+        ]);
 
       // Update local state
       setMessages(prev =>
@@ -300,19 +333,6 @@ export const useChat = () => {
         )
       );
 
-      // Also add to unsatisfied_queries table
-      const chat = messages.find(m => m.id === chatId);
-      if (chat) {
-        await supabase
-          .from('unsatisfied_queries')
-          .insert([
-            {
-              chat_id: chatId,
-              user_phone: chat.user_phone,
-              file_url: chat.file_url,
-            }
-          ]);
-      }
     } catch (error) {
       console.error('Error marking as unsatisfied:', error);
       throw error;

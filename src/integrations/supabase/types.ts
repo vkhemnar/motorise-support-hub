@@ -108,6 +108,79 @@ export type Database = {
           },
         ]
       }
+      ticket_responses: {
+        Row: {
+          admin_phone: string
+          created_at: string
+          id: string
+          response_file_url: string | null
+          response_text: string | null
+          ticket_id: string
+        }
+        Insert: {
+          admin_phone: string
+          created_at?: string
+          id?: string
+          response_file_url?: string | null
+          response_text?: string | null
+          ticket_id: string
+        }
+        Update: {
+          admin_phone?: string
+          created_at?: string
+          id?: string
+          response_file_url?: string | null
+          response_text?: string | null
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_responses_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tickets: {
+        Row: {
+          chat_id: string
+          created_at: string
+          id: string
+          status: Database["public"]["Enums"]["ticket_status"]
+          title: string
+          updated_at: string
+          user_phone: string
+        }
+        Insert: {
+          chat_id: string
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["ticket_status"]
+          title: string
+          updated_at?: string
+          user_phone: string
+        }
+        Update: {
+          chat_id?: string
+          created_at?: string
+          id?: string
+          status?: Database["public"]["Enums"]["ticket_status"]
+          title?: string
+          updated_at?: string
+          user_phone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_chat_id_fkey"
+            columns: ["chat_id"]
+            isOneToOne: false
+            referencedRelation: "chats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       unsatisfied_queries: {
         Row: {
           chat_id: string
@@ -173,6 +246,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      ticket_status: "open" | "in_progress" | "resolved"
       user_role: "admin" | "customer"
     }
     CompositeTypes: {
@@ -301,6 +375,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ticket_status: ["open", "in_progress", "resolved"],
       user_role: ["admin", "customer"],
     },
   },
