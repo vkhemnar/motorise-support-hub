@@ -138,6 +138,16 @@ export const useChat = () => {
         return "Thank you for contacting MotoRise support. I'm here to help with any issues you're experiencing with your electric scooter. Could you please provide more details about the problem? Our support team will get back to you shortly.";
       }
 
+      // Define semantic synonyms for better matching
+      const synonyms: Record<string, string[]> = {
+        'interval': ['schedule', 'frequency', 'maintenance', 'routine'],
+        'schedule': ['interval', 'timing', 'frequency', 'maintenance'],
+        'maintenance': ['service', 'schedule', 'interval', 'routine'],
+        'service': ['maintenance', 'repair', 'schedule'],
+        'delayed': ['late', 'postponed', 'rescheduled'],
+        'appointment': ['booking', 'reservation', 'slot']
+      };
+
       let bestMatch: FAQ | null = null;
       let bestScore = 0;
 
@@ -147,23 +157,42 @@ export const useChat = () => {
         
         let score = 0;
         
+        // Create expanded search terms including synonyms
+        const expandedSearchTerms = [...searchTerms];
+        searchTerms.forEach(term => {
+          if (synonyms[term]) {
+            expandedSearchTerms.push(...synonyms[term]);
+          }
+        });
+
         // Higher weight for matches in the question title
         searchTerms.forEach(term => {
           // Exact word match in question (highest priority)
           if (faqQuestion.split(' ').includes(term)) {
-            score += 10;
+            score += 15;
           }
           // Partial match in question
           else if (faqQuestion.includes(term)) {
-            score += 5;
+            score += 8;
           }
           // Exact word match in response
           else if (faqResponse.split(' ').includes(term)) {
-            score += 2;
+            score += 3;
           }
           // Partial match in response (lowest priority)
           else if (faqResponse.includes(term)) {
             score += 1;
+          }
+        });
+
+        // Check for semantic matches with synonyms (lower weight)
+        expandedSearchTerms.forEach(term => {
+          if (!searchTerms.includes(term)) { // Only check synonyms, not original terms
+            if (faqQuestion.split(' ').includes(term)) {
+              score += 5;
+            } else if (faqQuestion.includes(term)) {
+              score += 2;
+            }
           }
         });
 
@@ -173,13 +202,35 @@ export const useChat = () => {
         ).length;
         
         if (matchingTerms > 1) {
-          score += matchingTerms * 2; // Bonus for multiple relevant terms
+          score += matchingTerms * 3; // Bonus for multiple relevant terms
         }
 
         // Calculate relevance ratio (matched terms / total terms)
         const relevanceRatio = matchingTerms / searchTerms.length;
         if (relevanceRatio >= 0.5) { // At least 50% of terms should match
           score += Math.floor(relevanceRatio * 10);
+        }
+
+        // Special handling for specific question patterns
+        const questionLower = question.toLowerCase();
+        
+        // Service interval/schedule questions should match maintenance
+        if ((questionLower.includes('service') && (questionLower.includes('interval') || questionLower.includes('schedule'))) ||
+            (questionLower.includes('maintenance') && questionLower.includes('schedule'))) {
+          if (faqQuestion.includes('maintenance') && faqQuestion.includes('schedule')) {
+            score += 20; // High boost for maintenance schedule
+          }
+          // Penalize delayed service responses for interval questions
+          if (faqQuestion.includes('delayed') || faqResponse.includes('delayed')) {
+            score -= 15;
+          }
+        }
+
+        // Delayed service questions should match delayed responses
+        if (questionLower.includes('delayed') || questionLower.includes('late') || questionLower.includes('postponed')) {
+          if (faqQuestion.includes('delayed') || faqResponse.includes('delayed')) {
+            score += 20;
+          }
         }
 
         if (score > bestScore) {
@@ -189,7 +240,7 @@ export const useChat = () => {
       });
 
       // Require minimum threshold for a meaningful match
-      const minimumThreshold = Math.max(10, searchTerms.length * 3);
+      const minimumThreshold = Math.max(12, searchTerms.length * 4);
       
       if (bestMatch && bestScore >= minimumThreshold) {
         console.info('FAQ match found:', { question, bestScore, matchedFAQ: bestMatch.question });
