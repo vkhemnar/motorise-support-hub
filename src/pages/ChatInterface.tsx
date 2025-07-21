@@ -298,14 +298,14 @@ export const ChatInterface = () => {
                                           <span className="sm:hidden">Not satisfied</span>
                                         </Button>
                                       </AlertDialogTrigger>
-                                      <AlertDialogContent className="sm:max-w-md mx-4 rounded-lg">
-                                        <AlertDialogHeader className="text-left">
+                                      <AlertDialogContent className="sm:max-w-md mx-4 rounded-lg p-6">
+                                        <AlertDialogHeader className="text-left pb-4">
                                           <AlertDialogTitle className="text-lg font-semibold">Create Support Ticket</AlertDialogTitle>
                                           <AlertDialogDescription className="text-sm text-muted-foreground mt-2">
                                             Are you sure you want to escalate this to our support team? This will create a support ticket and our team will assist you further.
                                           </AlertDialogDescription>
                                         </AlertDialogHeader>
-                                        <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+                                        <AlertDialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2 pt-2">
                                           <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
                                           <AlertDialogAction 
                                             onClick={() => handleUnsatisfied(message.id)}
