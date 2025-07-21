@@ -21,14 +21,18 @@ export const LoginForm = () => {
   } = useToast();
   const handlePhoneSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (phone.length < 10) {
+    
+    // Validate phone number: exactly 10 digits, no special characters
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
       toast({
         title: "Invalid Phone Number",
-        description: "Please enter a valid phone number",
+        description: "Please enter exactly 10 digits without any special characters",
         variant: "destructive"
       });
       return;
     }
+    
     setStep('otp');
   };
   const handleOtpSubmit = async (e: React.FormEvent) => {
