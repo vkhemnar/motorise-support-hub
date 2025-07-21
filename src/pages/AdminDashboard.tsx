@@ -515,7 +515,7 @@ export const AdminDashboard = () => {
 
   // Generate CSV template
   const downloadCsvTemplate = () => {
-    const csvContent = "Order ID,Phone Number,Product,Status\nORD12345,1234567890,Electric Scooter Model X,Pending\nORD12346,9876543210,Helmet - Black,Shipped";
+    const csvContent = "Order ID,Phone Number,Product,Status\nORD123456,1234567890,Electric Scooter Model X,Pending\nORD123457,9876543210,Helmet - Black,Shipped";
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
