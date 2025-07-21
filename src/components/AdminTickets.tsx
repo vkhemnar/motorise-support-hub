@@ -129,6 +129,22 @@ export const AdminTickets = () => {
                 <div className="space-y-2">
                   <h4 className="text-xs sm:text-sm font-medium text-muted-foreground">Original Question:</h4>
                   <p className="text-xs sm:text-sm bg-muted/30 p-2 sm:p-3 rounded-md break-words">{ticket.chat?.question}</p>
+                  
+                  {/* Customer's Attached File */}
+                  {ticket.chat?.file_url && (
+                    <div className="mt-2">
+                      <h5 className="text-xs font-medium text-muted-foreground mb-1">Customer's Attachment:</h5>
+                      <a 
+                        href={ticket.chat.file_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline text-xs sm:text-sm break-all inline-flex items-center gap-1"
+                      >
+                        <Upload className="h-3 w-3" />
+                        View Customer's File
+                      </a>
+                    </div>
+                  )}
                 </div>
                 
                 {/* Bot Response */}

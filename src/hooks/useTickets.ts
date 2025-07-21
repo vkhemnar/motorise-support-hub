@@ -14,6 +14,7 @@ export interface Ticket {
   chat?: {
     question: string;
     bot_response: string;
+    file_url: string | null;
   };
 }
 
@@ -42,7 +43,7 @@ export const useTickets = () => {
         .from('tickets')
         .select(`
           *,
-          chat:chats(question, bot_response)
+          chat:chats(question, bot_response, file_url)
         `)
         .order('created_at', { ascending: false });
 
