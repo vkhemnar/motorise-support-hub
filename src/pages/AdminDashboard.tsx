@@ -980,7 +980,7 @@ export const AdminDashboard = () => {
                     <div>
                       <label className="text-sm font-medium">Order ID *</label>
                       <Input
-                        placeholder="e.g., ORD12345"
+                        placeholder="e.g., ORD123456"
                         value={newOrderId}
                         onChange={(e) => setNewOrderId(e.target.value)}
                       />
