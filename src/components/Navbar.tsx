@@ -13,10 +13,7 @@ export const Navbar = () => {
     logout
   } = useAuth();
   const isActive = (path: string) => location.pathname === path;
-  const navItems = user ? [...(user.role === 'admin' ? [] : [{
-    name: 'Support Chat',
-    path: '/chat'
-  }])] : [];
+  const navItems = user ? [] : [];
   const handleLogout = () => {
     logout();
     navigate('/');
