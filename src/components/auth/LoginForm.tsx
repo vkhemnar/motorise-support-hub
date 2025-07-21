@@ -96,7 +96,7 @@ export const LoginForm = () => {
                 <label className="text-sm font-medium text-navy">Mobile Number</label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type="tel" placeholder="+91 9999999999" value={phone} onChange={e => setPhone(e.target.value)} className="pl-10" required />
+                  <Input type="tel" placeholder="9999999999" value={phone} onChange={e => setPhone(e.target.value)} className="pl-10" required />
                 </div>
                 
               </div>
@@ -120,7 +120,7 @@ export const LoginForm = () => {
                   </InputOTP>
                 </div>
                 <p className="text-xs text-muted-foreground text-center">
-                  Enter any 6-digit code (this is a demo)
+                  Enter 6-digit code
                 </p>
               </div>
               
