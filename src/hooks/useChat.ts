@@ -127,16 +127,60 @@ export const useChat = () => {
 
       if (error) throw error;
 
-      // Simple search - find FAQ with most matching keywords
-      const searchTerms = question.toLowerCase().split(' ').filter(term => term.length > 2);
+      // Improved search with better scoring and minimum threshold
+      const searchTerms = question.toLowerCase()
+        .replace(/[^\w\s]/g, '') // Remove punctuation
+        .split(' ')
+        .filter(term => term.length > 2)
+        .filter(term => !['the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'its', 'may', 'new', 'now', 'old', 'see', 'two', 'who', 'boy', 'did', 'way', 'she', 'use', 'your', 'what', 'when', 'where', 'will', 'with'].includes(term)); // Filter out common stop words
+
+      if (searchTerms.length === 0) {
+        return "Thank you for contacting MotoRise support. I'm here to help with any issues you're experiencing with your electric scooter. Could you please provide more details about the problem? Our support team will get back to you shortly.";
+      }
+
       let bestMatch: FAQ | null = null;
       let bestScore = 0;
 
       data?.forEach((faq) => {
-        const faqText = (faq.question + ' ' + faq.response).toLowerCase();
-        const score = searchTerms.reduce((acc, term) => {
-          return acc + (faqText.includes(term) ? 1 : 0);
-        }, 0);
+        const faqQuestion = faq.question.toLowerCase().replace(/[^\w\s]/g, '');
+        const faqResponse = faq.response.toLowerCase().replace(/[^\w\s]/g, '');
+        
+        let score = 0;
+        
+        // Higher weight for matches in the question title
+        searchTerms.forEach(term => {
+          // Exact word match in question (highest priority)
+          if (faqQuestion.split(' ').includes(term)) {
+            score += 10;
+          }
+          // Partial match in question
+          else if (faqQuestion.includes(term)) {
+            score += 5;
+          }
+          // Exact word match in response
+          else if (faqResponse.split(' ').includes(term)) {
+            score += 2;
+          }
+          // Partial match in response (lowest priority)
+          else if (faqResponse.includes(term)) {
+            score += 1;
+          }
+        });
+
+        // Bonus for multiple term matches
+        const matchingTerms = searchTerms.filter(term => 
+          faqQuestion.includes(term) || faqResponse.includes(term)
+        ).length;
+        
+        if (matchingTerms > 1) {
+          score += matchingTerms * 2; // Bonus for multiple relevant terms
+        }
+
+        // Calculate relevance ratio (matched terms / total terms)
+        const relevanceRatio = matchingTerms / searchTerms.length;
+        if (relevanceRatio >= 0.5) { // At least 50% of terms should match
+          score += Math.floor(relevanceRatio * 10);
+        }
 
         if (score > bestScore) {
           bestScore = score;
@@ -144,11 +188,17 @@ export const useChat = () => {
         }
       });
 
-      if (bestMatch && bestScore > 0) {
+      // Require minimum threshold for a meaningful match
+      const minimumThreshold = Math.max(10, searchTerms.length * 3);
+      
+      if (bestMatch && bestScore >= minimumThreshold) {
+        console.info('FAQ match found:', { question, bestScore, matchedFAQ: bestMatch.question });
         return bestMatch.response;
       }
 
-      // Default response if no match found
+      console.info('No relevant FAQ found:', { question, bestScore, threshold: minimumThreshold, searchTerms });
+      
+      // Default response if no meaningful match found
       return "Thank you for contacting MotoRise support. I'm here to help with any issues you're experiencing with your electric scooter. Could you please provide more details about the problem? Our support team will get back to you shortly.";
     } catch (error) {
       console.error('Error searching FAQs:', error);
