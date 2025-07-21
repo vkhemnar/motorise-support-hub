@@ -388,6 +388,25 @@ export const AdminDashboard = () => {
     }
 
     try {
+      // First, ensure the user exists in the users table
+      const { error: userError } = await supabase
+        .from('users')
+        .upsert([
+          {
+            phone_number: newOrderPhone.trim(),
+            role: 'customer' as const
+          }
+        ], { 
+          onConflict: 'phone_number',
+          ignoreDuplicates: true 
+        });
+
+      if (userError) {
+        console.error('Error creating/updating user:', userError);
+        // Continue anyway as the user might already exist
+      }
+
+      // Now insert the order
       const { error } = await supabase
         .from('orders')
         .insert([
