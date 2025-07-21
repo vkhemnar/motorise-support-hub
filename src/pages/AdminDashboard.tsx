@@ -650,12 +650,10 @@ export const AdminDashboard = () => {
                     <SelectTrigger>
                       <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="unsatisfied">Unsatisfied Only</SelectItem>
-                      <SelectItem value="resolved">Resolved</SelectItem>
-                      <SelectItem value="unresolved">Unresolved</SelectItem>
-                    </SelectContent>
+                     <SelectContent>
+                       <SelectItem value="all">All Status</SelectItem>
+                       <SelectItem value="unsatisfied">Unsatisfied Only</SelectItem>
+                     </SelectContent>
                   </Select>
                   
                   <Select value={dateFilter} onValueChange={setDateFilter}>
