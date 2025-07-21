@@ -298,7 +298,7 @@ export const ChatInterface = () => {
                                           <span className="sm:hidden">Not satisfied</span>
                                         </Button>
                                       </AlertDialogTrigger>
-                                      <AlertDialogContent className="sm:max-w-md mx-4 rounded-lg p-6">
+                                      <AlertDialogContent className="w-[calc(100vw-2rem)] max-w-md mx-auto rounded-lg p-6">
                                         <AlertDialogHeader className="text-left pb-4">
                                           <AlertDialogTitle className="text-lg font-semibold">Create Support Ticket</AlertDialogTitle>
                                           <AlertDialogDescription className="text-sm text-muted-foreground mt-2">
