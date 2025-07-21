@@ -711,21 +711,12 @@ export const AdminDashboard = () => {
                                 <span className="sm:hidden">Bad</span>
                               </Badge>
                             )}
-                            {chat.resolved ? (
+                            {chat.resolved && (
                               <Badge variant="default" className="bg-green-100 text-green-700 text-xs">
                                 <CheckCircle className="h-3 w-3 mr-1 flex-shrink-0" />
                                 <span className="hidden sm:inline">Resolved</span>
                                 <span className="sm:hidden">Done</span>
                               </Badge>
-                            ) : (
-                              <Button
-                                size="sm"
-                                onClick={() => markAsResolved(chat.id)}
-                                className="h-7 text-xs px-2 sm:px-3"
-                              >
-                                <span className="hidden sm:inline">Mark Resolved</span>
-                                <span className="sm:hidden">Resolve</span>
-                              </Button>
                             )}
                           </div>
                         </div>
