@@ -298,16 +298,19 @@ export const ChatInterface = () => {
                                           <span className="sm:hidden">Not satisfied</span>
                                         </Button>
                                       </AlertDialogTrigger>
-                                      <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                          <AlertDialogTitle>Create Support Ticket</AlertDialogTitle>
-                                          <AlertDialogDescription>
+                                      <AlertDialogContent className="sm:max-w-md mx-4 rounded-lg">
+                                        <AlertDialogHeader className="text-left">
+                                          <AlertDialogTitle className="text-lg font-semibold">Create Support Ticket</AlertDialogTitle>
+                                          <AlertDialogDescription className="text-sm text-muted-foreground mt-2">
                                             Are you sure you want to escalate this to our support team? This will create a support ticket and our team will assist you further.
                                           </AlertDialogDescription>
                                         </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                          <AlertDialogAction onClick={() => handleUnsatisfied(message.id)}>
+                                        <AlertDialogFooter className="flex-col sm:flex-row gap-2 sm:gap-0">
+                                          <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
+                                          <AlertDialogAction 
+                                            onClick={() => handleUnsatisfied(message.id)}
+                                            className="w-full sm:w-auto bg-red-600 hover:bg-red-700"
+                                          >
                                             Yes, Create Ticket
                                           </AlertDialogAction>
                                         </AlertDialogFooter>
