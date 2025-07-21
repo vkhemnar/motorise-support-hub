@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Send, 
@@ -285,16 +286,33 @@ export const ChatInterface = () => {
                                     >
                                       <ThumbsUp className="h-3 w-3" />
                                     </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      className="text-xs px-2 py-1 h-7 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
-                                      onClick={() => handleUnsatisfied(message.id)}
-                                    >
-                                      <AlertCircle className="h-3 w-3 mr-1" />
-                                      <span className="hidden sm:inline">Not satisfied – escalate this</span>
-                                      <span className="sm:hidden">Not satisfied</span>
-                                    </Button>
+                                    <AlertDialog>
+                                      <AlertDialogTrigger asChild>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="text-xs px-2 py-1 h-7 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
+                                        >
+                                          <AlertCircle className="h-3 w-3 mr-1" />
+                                          <span className="hidden sm:inline">Not satisfied – escalate this</span>
+                                          <span className="sm:hidden">Not satisfied</span>
+                                        </Button>
+                                      </AlertDialogTrigger>
+                                      <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                          <AlertDialogTitle>Create Support Ticket</AlertDialogTitle>
+                                          <AlertDialogDescription>
+                                            Are you sure you want to escalate this to our support team? This will create a support ticket and our team will assist you further.
+                                          </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                          <AlertDialogAction onClick={() => handleUnsatisfied(message.id)}>
+                                            Yes, Create Ticket
+                                          </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                      </AlertDialogContent>
+                                    </AlertDialog>
                                   </div>
                                 )}
                                 
