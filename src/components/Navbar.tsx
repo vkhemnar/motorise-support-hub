@@ -70,15 +70,6 @@ export const Navbar = () => {
                       {user.phone}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-sm">
-                      <User className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                      Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="text-sm">
-                      <Settings className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                      Settings
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout} className="text-destructive text-sm">
                       <LogOut className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                       Logout
