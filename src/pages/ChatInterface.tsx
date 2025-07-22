@@ -306,12 +306,12 @@ export const ChatInterface = () => {
                                           </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2 pt-2">
-                                          <AlertDialogCancel className="w-full sm:w-auto">Cancel</AlertDialogCancel>
+                                          <AlertDialogCancel className="w-full sm:w-auto">No</AlertDialogCancel>
                                           <AlertDialogAction 
                                             onClick={() => handleUnsatisfied(message.id)}
                                             className="w-full sm:w-auto bg-red-600 hover:bg-red-700"
                                           >
-                                            Yes, Create Ticket
+                                            Yes
                                           </AlertDialogAction>
                                         </AlertDialogFooter>
                                       </AlertDialogContent>
@@ -322,7 +322,7 @@ export const ChatInterface = () => {
                                 {message.is_unsatisfied && (
                                   <Badge variant="outline" className="text-xs">
                                     <AlertCircle className="h-3 w-3 mr-1" />
-                                    Escalated to support
+                                    Raised to support
                                   </Badge>
                                 )}
                               </div>
