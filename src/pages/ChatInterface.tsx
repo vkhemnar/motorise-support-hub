@@ -294,15 +294,15 @@ export const ChatInterface = () => {
                                           className="text-xs px-2 py-1 h-7 hover:bg-red-50 hover:text-red-600 hover:border-red-200"
                                         >
                                           <AlertCircle className="h-3 w-3 mr-1" />
-                                          <span className="hidden sm:inline">Not satisfied – escalate this</span>
-                                          <span className="sm:hidden">Not satisfied</span>
+                                          <span className="hidden sm:inline">Raise Ticket</span>
+                                          <span className="sm:hidden">Raise Ticket</span>
                                         </Button>
                                       </AlertDialogTrigger>
                                       <AlertDialogContent className="w-[calc(100vw-2rem)] max-w-md mx-auto rounded-lg p-6">
                                         <AlertDialogHeader className="text-left pb-4">
-                                          <AlertDialogTitle className="text-lg font-semibold">Create Support Ticket</AlertDialogTitle>
+                                          <AlertDialogTitle className="text-lg font-semibold">Raise Ticket</AlertDialogTitle>
                                           <AlertDialogDescription className="text-sm text-muted-foreground mt-2">
-                                            Are you sure you want to escalate this to our support team? This will create a support ticket and our team will assist you further.
+                                            This will create a support ticket and our team will assist you further. Do you want to go ahead?
                                           </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter className="flex-col sm:flex-row gap-3 sm:gap-2 pt-2">
