@@ -322,7 +322,7 @@ export const ChatInterface = () => {
                                 {message.is_unsatisfied && (
                                   <Badge variant="outline" className="text-xs">
                                     <AlertCircle className="h-3 w-3 mr-1" />
-                                    Raised to support
+                                    Ticket created
                                   </Badge>
                                 )}
                               </div>
