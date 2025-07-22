@@ -145,7 +145,14 @@ export const useChat = () => {
         'maintenance': ['service', 'schedule', 'interval', 'routine'],
         'service': ['maintenance', 'repair', 'schedule'],
         'delayed': ['late', 'postponed', 'rescheduled'],
-        'appointment': ['booking', 'reservation', 'slot']
+        'appointment': ['booking', 'reservation', 'slot'],
+        'dead': ['charging', 'battery', 'power', 'charge'],
+        'charging': ['dead', 'battery', 'power', 'charge'],
+        'battery': ['dead', 'charging', 'power', 'charge'],
+        'slow': ['speed', 'performance', 'running'],
+        'starting': ['start', 'power', 'turn'],
+        'range': ['distance', 'battery', 'decreased'],
+        'brake': ['braking', 'stop', 'stopping']
       };
 
       let bestMatch: FAQ | null = null;
