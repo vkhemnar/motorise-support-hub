@@ -135,7 +135,7 @@ export const useChat = () => {
         .filter(term => !['the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'its', 'may', 'new', 'now', 'old', 'see', 'two', 'who', 'boy', 'did', 'way', 'she', 'use', 'your', 'what', 'when', 'where', 'will', 'with'].includes(term)); // Filter out common stop words
 
       if (searchTerms.length === 0) {
-        return "Thank you for contacting MotoRise support. I'm here to help with any issues you're experiencing with your electric scooter. Could you please provide more details about the problem? Our support team will get back to you shortly.";
+        return "Thank you for contacting MotoRise support. I'm here to help with any issues you're experiencing with your electric scooter.";
       }
 
       // Define semantic synonyms for better matching
@@ -250,7 +250,7 @@ export const useChat = () => {
       console.info('No relevant FAQ found:', { question, bestScore, threshold: minimumThreshold, searchTerms });
       
       // Default response if no meaningful match found
-      return "Thank you for contacting MotoRise support. I'm here to help with any issues you're experiencing with your electric scooter. Could you please provide more details about the problem? Our support team will get back to you shortly.";
+      return "Thank you for contacting MotoRise support. I'm here to help with any issues you're experiencing with your electric scooter.";
     } catch (error) {
       console.error('Error searching FAQs:', error);
       return "I'm sorry, I'm having trouble processing your request right now. Please try again or contact our support team directly.";
