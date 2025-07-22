@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useUsers } from '@/hooks/useUsers';
+import { supabase } from '@/integrations/supabase/client';
 
 interface User {
   id: string;
@@ -16,9 +17,6 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Hardcoded admin numbers
-const ADMIN_NUMBERS = ["2222222222", "3333333333", "4444444444"];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -40,8 +38,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Determine role based on phone number
-      const role = ADMIN_NUMBERS.includes(phone) ? 'admin' : 'customer';
+      // Check if user exists in database
+      const { data: existingUser, error } = await supabase
+        .from('users')
+        .select('phone_number, role')
+        .eq('phone_number', phone)
+        .single();
+
+      let role: 'admin' | 'customer' = 'customer';
+
+      if (error && error.code === 'PGRST116') {
+        // User doesn't exist, create new customer
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert([{ phone_number: phone, role: 'customer' }]);
+        
+        if (insertError) {
+          throw new Error('Failed to create user account');
+        }
+        role = 'customer';
+      } else if (existingUser) {
+        // User exists, use their role from database
+        role = existingUser.role;
+      } else if (error) {
+        throw new Error('Failed to check user account');
+      }
       
       // Create user object
       const newUser: User = {
