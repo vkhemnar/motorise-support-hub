@@ -56,6 +56,8 @@ export const useChat = () => {
     if (!user?.phone) return null;
 
     const lowerQuestion = question.toLowerCase();
+    console.log('checkOrderStatus called with question:', question);
+    console.log('lowerQuestion:', lowerQuestion);
     
     // Exclude questions about HOW TO place orders - these should go to FAQs
     const placementKeywords = ['how to', 'how do', 'how can', 'how should', 'place order', 'make order', 'book order', 'buy', 'how to order'];
@@ -63,6 +65,9 @@ export const useChat = () => {
     
     // Additional check for placement context
     const placementContext = lowerQuestion.includes('place') && (lowerQuestion.includes('how') || lowerQuestion.includes('should'));
+    
+    console.log('isPlacementQuestion:', isPlacementQuestion);
+    console.log('placementContext:', placementContext);
     
     if (isPlacementQuestion || placementContext) {
       console.log('Detected order placement question, routing to FAQ');
@@ -126,11 +131,15 @@ export const useChat = () => {
   };
 
   const searchFAQs = async (question: string): Promise<string> => {
+    console.log('searchFAQs called with question:', question);
     // First check if this is an order-related query
     const orderResponse = await checkOrderStatus(question);
+    console.log('orderResponse from checkOrderStatus:', orderResponse);
     if (orderResponse) {
+      console.log('Returning order response instead of FAQ');
       return orderResponse;
     }
+    console.log('No order response, proceeding to FAQ search');
 
     try {
       const { data, error } = await supabase
