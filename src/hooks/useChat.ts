@@ -132,7 +132,7 @@ export const useChat = () => {
         .replace(/[^\w\s]/g, '') // Remove punctuation
         .split(' ')
         .filter(term => term.length > 2)
-        .filter(term => !['the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'its', 'may', 'new', 'now', 'old', 'see', 'two', 'who', 'boy', 'did', 'way', 'she', 'use', 'your', 'what', 'when', 'where', 'will', 'with'].includes(term)); // Filter out common stop words
+        .filter(term => !['the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'her', 'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his', 'how', 'its', 'may', 'new', 'now', 'old', 'see', 'two', 'who', 'boy', 'did', 'way', 'she', 'use', 'your', 'will', 'with'].includes(term)); // Filter out common stop words but keep location terms
 
       if (searchTerms.length === 0) {
         return "Thank you for contacting MotoRise support. I'm here to help with any issues you're experiencing with your electric scooter.";
@@ -152,7 +152,16 @@ export const useChat = () => {
         'slow': ['speed', 'performance', 'running'],
         'starting': ['start', 'power', 'turn'],
         'range': ['distance', 'battery', 'decreased'],
-        'brake': ['braking', 'stop', 'stopping']
+        'brake': ['braking', 'stop', 'stopping'],
+        'office': ['offices', 'location', 'store', 'branch', 'center', 'address'],
+        'offices': ['office', 'location', 'store', 'branch', 'center', 'address'],
+        'location': ['office', 'offices', 'store', 'branch', 'center', 'address', 'where'],
+        'store': ['office', 'offices', 'location', 'branch', 'center', 'shop'],
+        'branch': ['office', 'offices', 'location', 'store', 'center'],
+        'center': ['office', 'offices', 'location', 'store', 'branch'],
+        'address': ['location', 'office', 'offices', 'where'],
+        'pickup': ['collect', 'pick', 'take', 'get'],
+        'collect': ['pickup', 'pick', 'take', 'get']
       };
 
       let bestMatch: FAQ | null = null;
