@@ -57,14 +57,22 @@ export const useChat = () => {
 
     const lowerQuestion = question.toLowerCase();
     
-    // Check if question is about order status
-    const orderKeywords = ['order', 'delivery', 'shipment', 'shipped', 'tracking', 'status'];
-    const hasOrderKeyword = orderKeywords.some(keyword => lowerQuestion.includes(keyword));
+    // Exclude questions about HOW TO place orders - these should go to FAQs
+    const placementKeywords = ['how to', 'how do', 'how can', 'how should', 'place order', 'make order', 'book order', 'buy'];
+    const isPlacementQuestion = placementKeywords.some(keyword => lowerQuestion.includes(keyword));
+    
+    if (isPlacementQuestion) {
+      return null; // Let FAQ handle order placement questions
+    }
+    
+    // Check if question is about order status (more specific keywords)
+    const statusKeywords = ['order status', 'my order', 'delivery status', 'shipment', 'shipped', 'tracking', 'where is my', 'order update'];
+    const hasStatusKeyword = statusKeywords.some(keyword => lowerQuestion.includes(keyword));
     
     // Check for order ID pattern (ORD followed by numbers, not just letters)
     const orderIdMatch = question.match(/\bORD\d+[A-Z0-9]*\b/i);
     
-    if (hasOrderKeyword || orderIdMatch) {
+    if (hasStatusKeyword || orderIdMatch) {
       try {
         const { data, error } = await supabase
           .from('orders')
