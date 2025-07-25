@@ -58,10 +58,14 @@ export const useChat = () => {
     const lowerQuestion = question.toLowerCase();
     
     // Exclude questions about HOW TO place orders - these should go to FAQs
-    const placementKeywords = ['how to', 'how do', 'how can', 'how should', 'place order', 'make order', 'book order', 'buy'];
+    const placementKeywords = ['how to', 'how do', 'how can', 'how should', 'place order', 'make order', 'book order', 'buy', 'how to order'];
     const isPlacementQuestion = placementKeywords.some(keyword => lowerQuestion.includes(keyword));
     
-    if (isPlacementQuestion) {
+    // Additional check for placement context
+    const placementContext = lowerQuestion.includes('place') && (lowerQuestion.includes('how') || lowerQuestion.includes('should'));
+    
+    if (isPlacementQuestion || placementContext) {
+      console.log('Detected order placement question, routing to FAQ');
       return null; // Let FAQ handle order placement questions
     }
     
