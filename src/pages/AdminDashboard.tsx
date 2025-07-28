@@ -81,6 +81,8 @@ export const AdminDashboard = () => {
 
   // Order management state
   const [isAddOrderOpen, setIsAddOrderOpen] = useState(false);
+  const [isEditOrderOpen, setIsEditOrderOpen] = useState(false);
+  const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [newOrderId, setNewOrderId] = useState('');
   const [newOrderPhone, setNewOrderPhone] = useState('');
   const [newOrderProduct, setNewOrderProduct] = useState('');
@@ -510,6 +512,78 @@ export const AdminDashboard = () => {
       });
     } finally {
       setIsUploadingCsv(false);
+    }
+  };
+
+  // Update order
+  const updateOrder = async () => {
+    if (!editingOrder || !editingOrder.order_id.trim() || !editingOrder.phone_number.trim() || !editingOrder.product.trim()) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({
+          order_id: editingOrder.order_id.trim(),
+          phone_number: editingOrder.phone_number.trim(),
+          product: editingOrder.product.trim(),
+          status: editingOrder.status
+        })
+        .eq('id', editingOrder.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Order updated successfully."
+      });
+
+      setEditingOrder(null);
+      setIsEditOrderOpen(false);
+      loadOrders();
+    } catch (error) {
+      console.error('Error updating order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update order. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Delete order
+  const deleteOrder = async (orderId: string) => {
+    if (!confirm('Are you sure you want to delete this order?')) {
+      return;
+    }
+
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Order deleted successfully."
+      });
+
+      loadOrders();
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete order. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -1120,21 +1194,108 @@ export const AdminDashboard = () => {
                               </div>
                             </div>
                             
-                            <Badge 
-                              variant={
-                                order.status === 'Delivered' ? 'default' :
-                                order.status === 'Shipped' ? 'secondary' :
-                                order.status === 'Cancelled' ? 'destructive' :
-                                'outline'
-                              }
-                              className={`flex-shrink-0 ${
-                                order.status === 'Delivered' ? 'bg-green-100 text-green-700' :
-                                order.status === 'Shipped' ? 'bg-blue-100 text-blue-700' :
-                                ''
-                              }`}
-                            >
-                              {order.status}
-                            </Badge>
+                            <div className="flex items-center gap-2">
+                              <Badge 
+                                variant={
+                                  order.status === 'Delivered' ? 'default' :
+                                  order.status === 'Shipped' ? 'secondary' :
+                                  order.status === 'Cancelled' ? 'destructive' :
+                                  'outline'
+                                }
+                                className={`flex-shrink-0 ${
+                                  order.status === 'Delivered' ? 'bg-green-100 text-green-700' :
+                                  order.status === 'Shipped' ? 'bg-blue-100 text-blue-700' :
+                                  ''
+                                }`}
+                              >
+                                {order.status}
+                              </Badge>
+                              
+                              <div className="flex items-center gap-1">
+                                <Dialog open={isEditOrderOpen && editingOrder?.id === order.id} onOpenChange={(open) => {
+                                  setIsEditOrderOpen(open);
+                                  if (!open) setEditingOrder(null);
+                                }}>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => setEditingOrder({ ...order })}
+                                    >
+                                      <Edit className="h-4 w-4" />
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="sm:max-w-[600px]">
+                                    <DialogHeader>
+                                      <DialogTitle>Edit Order</DialogTitle>
+                                      <DialogDescription>
+                                        Update the order details.
+                                      </DialogDescription>
+                                    </DialogHeader>
+                                    {editingOrder && (
+                                      <div className="space-y-4">
+                                        <div>
+                                          <label className="text-sm font-medium">Order ID *</label>
+                                          <Input
+                                            value={editingOrder.order_id}
+                                            onChange={(e) => setEditingOrder({ ...editingOrder, order_id: e.target.value })}
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium">Customer Phone Number *</label>
+                                          <Input
+                                            value={editingOrder.phone_number}
+                                            onChange={(e) => setEditingOrder({ ...editingOrder, phone_number: e.target.value })}
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium">Product Name *</label>
+                                          <Input
+                                            value={editingOrder.product}
+                                            onChange={(e) => setEditingOrder({ ...editingOrder, product: e.target.value })}
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="text-sm font-medium">Delivery Status</label>
+                                          <Select value={editingOrder.status} onValueChange={(value) => setEditingOrder({ ...editingOrder, status: value })}>
+                                            <SelectTrigger>
+                                              <SelectValue placeholder="Select status" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                              <SelectItem value="Pending">Pending</SelectItem>
+                                              <SelectItem value="Processing">Processing</SelectItem>
+                                              <SelectItem value="Shipped">Shipped</SelectItem>
+                                              <SelectItem value="Delivered">Delivered</SelectItem>
+                                              <SelectItem value="Cancelled">Cancelled</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                        </div>
+                                      </div>
+                                    )}
+                                    <DialogFooter>
+                                      <Button variant="outline" onClick={() => {
+                                        setIsEditOrderOpen(false);
+                                        setEditingOrder(null);
+                                      }}>
+                                        Cancel
+                                      </Button>
+                                      <Button onClick={updateOrder}>
+                                        <Save className="h-4 w-4 mr-2" />
+                                        Update Order
+                                      </Button>
+                                    </DialogFooter>
+                                  </DialogContent>
+                                </Dialog>
+                                
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => deleteOrder(order.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
                           </div>
 
                           <div className="bg-muted/50 rounded-lg p-3">
